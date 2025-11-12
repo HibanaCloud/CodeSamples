@@ -1,0 +1,27 @@
+{
+  "name": "hibana-api-javascript-samples",
+  "version": "1.0.0",
+  "description": "JavaScript/Node.js code samples for Hibana AI API",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "hibana",
+    "ai",
+    "openai",
+    "anthropic",
+    "claude",
+    "gpt",
+    "gemini",
+    "deepseek",
+    "llm"
+  ],
+  "author": "Hibana Cloud",
+  "license": "MIT",
+  "dependencies": {
+    "openai": "^4.0.0",
+    "axios": "^1.6.0"
+  }
+}
