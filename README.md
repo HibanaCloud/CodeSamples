@@ -48,6 +48,18 @@ cd java
 
 **[View Java README →](java/README.md)**
 
+### 🔷 [C# Samples](csharp/)
+
+Complete set of C# examples using the OpenAI .NET SDK.
+
+```bash
+cd csharp
+dotnet build
+dotnet run
+```
+
+**[View C# README →](csharp/README.md)**
+
 ## Quick Start
 
 ### API Configuration
@@ -119,19 +131,34 @@ ChatCompletion response = client.chat().completions().create(params);
 System.out.println(response.choices().get(0).message().content().orElse(""));
 ```
 
-## Supported Models
+### C# Example
 
-| Provider | Model ID | Description |
-|----------|----------|-------------|
-| **OpenAI** | `gpt-5-nano` | Fast and efficient GPT model |
-| **Anthropic** | `claude-haiku-4-5` | Claude Haiku - Fast responses |
-| **DeepSeek** | `deepseek-chat` | DeepSeek conversational model |
-| **Google** | `gemini-2.5-flash-lite` | Gemini Flash - Lightweight |
-| **OpenAI** | `dall-e-3` | Image generation |
+```csharp
+using System;
+using System.ClientModel;
+using OpenAI;
+using OpenAI.Chat;
+
+var client = new OpenAIClient(
+    new ApiKeyCredential("YOUR_API_KEY"),
+    new OpenAIClientOptions
+    {
+        Endpoint = new Uri("https://api-ai.hibanacloud.com/v1")
+    }
+);
+
+var chatClient = client.GetChatClient("gpt-5-nano");
+
+var response = await chatClient.CompleteChatAsync(
+    new[] { new UserChatMessage("Hello!") }
+);
+
+Console.WriteLine(response.Value.Content[0].Text);
+```
 
 ## Sample Categories
 
-All samples are available in Python, JavaScript, and Java:
+All samples are available in Python, JavaScript, Java, and C#:
 
 ### 📚 Basic Examples
 1. **Simple Chat** - Basic chat completion
