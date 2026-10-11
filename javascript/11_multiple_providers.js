@@ -10,16 +10,16 @@ import OpenAI from 'openai';
 
 // Initialize the Hibana client
 const client = new OpenAI({
-    apiKey: "YOUR_API_KEY",
-    baseURL: "https://api-ai.hibanacloud.com/v1"
+    apiKey: process.env.HIBANA_API_KEY ?? "YOUR_API_KEY",
+    baseURL: "https://api-ai.hibanacloud.ir/v1"
 });
 
 // Define models for each provider
 const MODELS = {
     "OpenAI": "gpt-5-nano",
     "Anthropic": "claude-haiku-4-5",
-    "DeepSeek": "deepseek-chat",
-    "Google": "gemini-2.5-flash-lite"
+    "DeepSeek": "deepseek-v4-flash",
+    "Google": "gemini-3.7-flash"
 };
 
 async function compareBasicResponses() {
@@ -267,7 +267,7 @@ async function providerSpecificFeatures() {
     console.log("-".repeat(60));
     try {
         const response = await client.chat.completions.create({
-            model: "deepseek-chat",
+            model: "deepseek-v4-flash",
             messages: [
                 {
                     role: "user",
@@ -289,7 +289,7 @@ async function providerSpecificFeatures() {
     console.log("-".repeat(60));
     try {
         const response = await client.chat.completions.create({
-            model: "gemini-2.5-flash-lite",
+            model: "gemini-3.7-flash",
             messages: [
                 {
                     role: "user",
@@ -315,11 +315,11 @@ function chooseBestModelForTask() {
 
     const recommendations = {
         "Speed & Cost": {
-            model: "gpt-5-nano or deepseek-chat",
+            model: "gpt-5-nano or deepseek-v4-flash",
             reason: "Fast responses and low cost"
         },
         "Coding": {
-            model: "deepseek-chat or gpt-5-nano",
+            model: "deepseek-v4-flash or gpt-5-nano",
             reason: "Strong programming capabilities"
         },
         "Creative Writing": {
@@ -331,7 +331,7 @@ function chooseBestModelForTask() {
             reason: "Large context window"
         },
         "Multilingual": {
-            model: "gpt-5-nano or gemini-2.5-flash-lite",
+            model: "gpt-5-nano or gemini-3.7-flash",
             reason: "Good multilingual support"
         },
         "JSON Output": {
@@ -344,7 +344,7 @@ function chooseBestModelForTask() {
 
     for (const [task, info] of Object.entries(recommendations)) {
         console.log(`${task}:`);
-        console.log(`  ’ ${info.model}`);
+        console.log(`  ï¿½ ${info.model}`);
         console.log(`  Reason: ${info.reason}`);
         console.log();
     }

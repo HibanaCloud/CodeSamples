@@ -13,10 +13,10 @@
 import OpenAI from 'openai';
 
 // Initialize the Hibana client
-// Replace "YOUR_API_KEY" with your actual Hibana API key
+// Reads your Hibana API key from the HIBANA_API_KEY environment variable
 const client = new OpenAI({
-    apiKey: "YOUR_API_KEY",
-    baseURL: "https://api-ai.hibanacloud.com/v1"
+    apiKey: process.env.HIBANA_API_KEY ?? "YOUR_API_KEY",
+    baseURL: "https://api-ai.hibanacloud.ir/v1"
 });
 
 async function simpleChat() {

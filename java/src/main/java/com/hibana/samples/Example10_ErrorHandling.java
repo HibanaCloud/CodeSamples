@@ -4,9 +4,9 @@ import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.core.http.StreamResponse;
 import com.openai.errors.*;
-import com.openai.models.ChatCompletion;
-import com.openai.models.ChatCompletionCreateParams;
-import com.openai.models.ChatCompletionMessage;
+import com.openai.models.chat.completions.ChatCompletion;
+import com.openai.models.chat.completions.ChatCompletionCreateParams;
+import com.openai.models.chat.completions.ChatCompletionUserMessageParam;
 
 /**
  * 10 - Error Handling
@@ -17,8 +17,8 @@ import com.openai.models.ChatCompletionMessage;
  */
 public class Example10_ErrorHandling {
 
-    private static final String API_KEY = "YOUR_API_KEY";
-    private static final String BASE_URL = "https://api-ai.hibanacloud.com/v1";
+    private static final String API_KEY = System.getenv().getOrDefault("HIBANA_API_KEY", "YOUR_API_KEY");
+    private static final String BASE_URL = "https://api-ai.hibanacloud.ir/v1";
 
     public static void main(String[] args) {
         try {
@@ -56,16 +56,14 @@ public class Example10_ErrorHandling {
         try {
             ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
                     .model("gpt-5-nano")
-                    .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                            ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                    .content("Hello")
-                                    .build()
-                    ))
+                    .addMessage(ChatCompletionUserMessageParam.builder()
+                            .content("Hello")
+                            .build())
                     .build();
 
             badClient.chat().completions().create(params);
 
-        } catch (AuthenticationError e) {
+        } catch (UnauthorizedException e) {
             System.out.println("\n✗ Authentication Error Caught!");
             System.out.println("Error message: " + e.getMessage());
             System.out.println("\nSolution:");
@@ -92,16 +90,14 @@ public class Example10_ErrorHandling {
         try {
             ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
                     .model("non-existent-model-xyz")
-                    .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                            ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                    .content("Hello")
-                                    .build()
-                    ))
+                    .addMessage(ChatCompletionUserMessageParam.builder()
+                            .content("Hello")
+                            .build())
                     .build();
 
             client.chat().completions().create(params);
 
-        } catch (NotFoundError | BadRequestError e) {
+        } catch (NotFoundException | BadRequestException e) {
             System.out.println("\n✗ Model Not Found Error!");
             System.out.println("Error: " + e.getMessage());
             System.out.println("\nSolution:");
@@ -131,11 +127,9 @@ public class Example10_ErrorHandling {
             for (int i = 0; i < 5; i++) {
                 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
                         .model("gpt-5-nano")
-                        .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                                ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                        .content("Request " + (i + 1))
-                                        .build()
-                        ))
+                        .addMessage(ChatCompletionUserMessageParam.builder()
+                                .content("Request " + (i + 1))
+                                .build())
                         .maxTokens(10000L)
                         .build();
 
@@ -144,7 +138,7 @@ public class Example10_ErrorHandling {
                 Thread.sleep(100);  // Small delay
             }
 
-        } catch (RateLimitError e) {
+        } catch (RateLimitException e) {
             System.out.println("\n✗ Rate Limit Error: " + e.getMessage());
             System.out.println("\nSolution:");
             System.out.println("  1. Implement exponential backoff");
@@ -175,11 +169,9 @@ public class Example10_ErrorHandling {
         try {
             ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
                     .model("gpt-5-nano")
-                    .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                            ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                    .content("Test")
-                                    .build()
-                    ))
+                    .addMessage(ChatCompletionUserMessageParam.builder()
+                            .content("Test")
+                            .build())
                     .maxTokens(10000L)
                     .build();
 
@@ -221,11 +213,9 @@ public class Example10_ErrorHandling {
 
                 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
                         .model("gpt-5-nano")
-                        .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                                ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                        .content("Hello")
-                                        .build()
-                        ))
+                        .addMessage(ChatCompletionUserMessageParam.builder()
+                                .content("Hello")
+                                .build())
                         .maxTokens(10000L)
                         .build();
 
@@ -235,7 +225,7 @@ public class Example10_ErrorHandling {
                 System.out.println("Response: " + response.choices().get(0).message().content().orElse(""));
                 break;
 
-            } catch (RateLimitError e) {
+            } catch (RateLimitException e) {
                 if (attempt < maxRetries - 1) {
                     long delay = baseDelay * (long) Math.pow(2, attempt);
                     System.out.println("✗ Rate limited. Retrying in " + (delay / 1000) + " seconds...");
@@ -298,33 +288,31 @@ public class Example10_ErrorHandling {
         try {
             ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
                     .model(model)
-                    .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                            ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                    .content(userMessage)
-                                    .build()
-                    ))
+                    .addMessage(ChatCompletionUserMessageParam.builder()
+                            .content(userMessage)
+                            .build())
                     .maxTokens(10000L)
                     .build();
 
             return client.chat().completions().create(params);
 
-        } catch (AuthenticationError e) {
+        } catch (UnauthorizedException e) {
             System.out.println("✗ Authentication Error: " + e.getMessage());
             System.out.println("Check your API key.");
             return null;
-        } catch (NotFoundError e) {
+        } catch (NotFoundException e) {
             System.out.println("✗ Not Found: " + e.getMessage());
             System.out.println("Model may not exist or be unavailable.");
             return null;
-        } catch (RateLimitError e) {
+        } catch (RateLimitException e) {
             System.out.println("✗ Rate Limit: " + e.getMessage());
             System.out.println("Too many requests. Please wait and try again.");
             return null;
-        } catch (BadRequestError e) {
+        } catch (BadRequestException e) {
             System.out.println("✗ Bad Request: " + e.getMessage());
             System.out.println("Check your request parameters.");
             return null;
-        } catch (InternalServerError e) {
+        } catch (InternalServerException e) {
             System.out.println("✗ API Error: " + e.getMessage());
             System.out.println("An error occurred on the server side.");
             return null;
@@ -363,7 +351,7 @@ public class Example10_ErrorHandling {
          */
 
         // Validate model name
-        String[] validModels = {"gpt-5-nano", "claude-haiku-4-5", "deepseek-chat", "gemini-2.5-flash-lite"};
+        String[] validModels = {"gpt-5-nano", "claude-haiku-4-5", "deepseek-v4-flash", "gemini-3.7-flash"};
         boolean validModel = false;
         for (String valid : validModels) {
             if (valid.equals(model)) {
@@ -400,11 +388,9 @@ public class Example10_ErrorHandling {
         try {
             ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
                     .model(model)
-                    .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                            ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                    .content(userInput)
-                                    .build()
-                    ))
+                    .addMessage(ChatCompletionUserMessageParam.builder()
+                            .content(userInput)
+                            .build())
                     .maxTokens(10000L)
                     .build();
 

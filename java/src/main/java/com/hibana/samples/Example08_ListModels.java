@@ -2,8 +2,8 @@ package com.hibana.samples;
 
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
-import com.openai.models.Model;
-import com.openai.models.ModelListPage;
+import com.openai.models.models.Model;
+import com.openai.models.models.ModelListPage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,8 +19,8 @@ import java.util.Map;
  */
 public class Example08_ListModels {
 
-    private static final String API_KEY = "YOUR_API_KEY";
-    private static final String BASE_URL = "https://api-ai.hibanacloud.com/v1";
+    private static final String API_KEY = System.getenv().getOrDefault("HIBANA_API_KEY", "YOUR_API_KEY");
+    private static final String BASE_URL = "https://api-ai.hibanacloud.ir/v1";
 
     public static void main(String[] args) {
         try {
@@ -134,27 +134,34 @@ public class Example08_ListModels {
         String[] keyModels = {
                 "gpt-5-nano",
                 "claude-haiku-4-5",
-                "deepseek-chat",
-                "gemini-2.5-flash-lite"
+                "deepseek-v4-flash",
+                "gemini-3.7-flash"
         };
 
         System.out.println("\nInspecting key models:\n");
 
-        for (String modelId : keyModels) {
-            try {
-                Model model = client.models().retrieve(modelId);
+        // Look each model up in the list (Hibana serves GET /v1/models, not /v1/models/{id})
+        List<Model> available = client.models().list().data();
 
-                System.out.println("-".repeat(60));
-                System.out.println("Model: " + model.id());
-                System.out.println("Object: " + model.object());
-                System.out.println("Created: " + model.created());
-                System.out.println("Owned by: " + model.ownedBy());
-                System.out.println("-".repeat(60));
+        for (String modelId : keyModels) {
+            Model model = available.stream()
+                    .filter(m -> m.id().equals(modelId))
+                    .findFirst()
+                    .orElse(null);
+
+            if (model == null) {
+                System.out.println(modelId + " is not available to this API key");
                 System.out.println();
-            } catch (Exception e) {
-                System.out.println("Could not retrieve details for: " + modelId);
-                System.out.println();
+                continue;
             }
+
+            System.out.println("-".repeat(60));
+            System.out.println("Model: " + model.id());
+            System.out.println("Object: " + model._object_());
+            System.out.println("Created: " + model.created());
+            System.out.println("Owned by: " + model.ownedBy());
+            System.out.println("-".repeat(60));
+            System.out.println();
         }
 
         System.out.println("=".repeat(60));

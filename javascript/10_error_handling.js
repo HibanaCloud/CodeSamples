@@ -10,8 +10,8 @@ import OpenAI from 'openai';
 
 // Initialize the Hibana client
 const client = new OpenAI({
-    apiKey: "YOUR_API_KEY",
-    baseURL: "https://api-ai.hibanacloud.com/v1"
+    apiKey: process.env.HIBANA_API_KEY ?? "YOUR_API_KEY",
+    baseURL: "https://api-ai.hibanacloud.ir/v1"
 });
 
 async function handleAuthenticationError() {
@@ -26,7 +26,7 @@ async function handleAuthenticationError() {
     // Create client with invalid API key
     const badClient = new OpenAI({
         apiKey: "INVALID_KEY_123",
-        baseURL: "https://api-ai.hibanacloud.com/v1"
+        baseURL: "https://api-ai.hibanacloud.ir/v1"
     });
 
     try {
@@ -194,8 +194,8 @@ async function handleTimeout() {
 
     // Set a short timeout for demonstration
     const timeoutClient = new OpenAI({
-        apiKey: "YOUR_API_KEY",
-        baseURL: "https://api-ai.hibanacloud.com/v1",
+        apiKey: process.env.HIBANA_API_KEY ?? "YOUR_API_KEY",
+        baseURL: "https://api-ai.hibanacloud.ir/v1",
         timeout: 1  // Very short timeout (will likely fail)
     });
 
@@ -299,7 +299,7 @@ async function validateBeforeRequest() {
          */
 
         // Validate model name
-        const validModels = ["gpt-5-nano", "claude-haiku-4-5", "deepseek-chat", "gemini-2.5-flash-lite"];
+        const validModels = ["gpt-5-nano", "claude-haiku-4-5", "deepseek-v4-flash", "gemini-3.7-flash"];
 
         if (!validModels.includes(model)) {
             console.log(` Invalid model: ${model}`);

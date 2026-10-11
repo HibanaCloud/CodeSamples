@@ -8,13 +8,14 @@ are enabled for your account.
 Endpoint: GET /v1/models
 """
 
+import os
 from openai import OpenAI
 from datetime import datetime
 
 # Initialize the Hibana client
 client = OpenAI(
-    api_key="YOUR_API_KEY",
-    base_url="https://api-ai.hibanacloud.com/v1"
+    api_key=os.environ.get("HIBANA_API_KEY", "YOUR_API_KEY"),
+    base_url="https://api-ai.hibanacloud.ir/v1"
 )
 
 def list_all_models():
@@ -81,7 +82,7 @@ def filter_models_by_type():
     for model in models.data:
         model_id = model.id.lower()
 
-        if 'dall-e' in model_id or 'dalle' in model_id:
+        if 'image' in model_id or 'dall-e' in model_id:
             image_models.append(model.id)
         elif any(x in model_id for x in ['gpt', 'claude', 'deepseek', 'gemini']):
             chat_models.append(model.id)
@@ -117,8 +118,11 @@ def get_specific_model_info():
     print(f"\nQuerying model: {model_id}")
 
     try:
-        # Retrieve specific model
-        model = client.models.retrieve(model_id)
+        # Look the model up in the list (Hibana serves GET /v1/models, not /v1/models/{id})
+        model = next((m for m in client.models.list() if m.id == model_id), None)
+        if model is None:
+            print(f"{model_id} is not available to this API key")
+            return
 
         print("\nModel Details:")
         print("-" * 40)
@@ -147,9 +151,9 @@ def check_model_availability():
     models_to_check = [
         "gpt-5-nano",
         "claude-haiku-4-5",
-        "deepseek-chat",
-        "gemini-2.5-flash-lite",
-        "dall-e-3"
+        "deepseek-v4-flash",
+        "gemini-3.7-flash",
+        "gemini-3.1-flash-lite-image"
     ]
 
     print("\nChecking availability...\n")
@@ -183,7 +187,7 @@ def display_models_table():
         provider = model.owned_by
 
         # Determine type
-        if 'dall-e' in model_id.lower():
+        if 'image' in model_id.lower() or 'dall-e' in model_id.lower():
             model_type = "Image"
         elif any(x in model_id.lower() for x in ['gpt', 'claude', 'deepseek', 'gemini']):
             model_type = "Chat"

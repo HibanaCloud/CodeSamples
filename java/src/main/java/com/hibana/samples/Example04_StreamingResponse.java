@@ -2,11 +2,10 @@ package com.hibana.samples;
 
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
-import com.openai.models.ChatCompletionChunk;
-import com.openai.models.ChatCompletionCreateParams;
-import com.openai.models.ChatCompletionMessage;
-
-import java.util.stream.Stream;
+import com.openai.core.http.StreamResponse;
+import com.openai.models.chat.completions.ChatCompletionChunk;
+import com.openai.models.chat.completions.ChatCompletionCreateParams;
+import com.openai.models.chat.completions.ChatCompletionUserMessageParam;
 
 /**
  * 04 - Streaming Response
@@ -19,8 +18,8 @@ import java.util.stream.Stream;
  */
 public class Example04_StreamingResponse {
 
-    private static final String API_KEY = "YOUR_API_KEY";
-    private static final String BASE_URL = "https://api-ai.hibanacloud.com/v1";
+    private static final String API_KEY = System.getenv().getOrDefault("HIBANA_API_KEY", "YOUR_API_KEY");
+    private static final String BASE_URL = "https://api-ai.hibanacloud.ir/v1";
 
     public static void main(String[] args) {
         try {
@@ -57,33 +56,31 @@ public class Example04_StreamingResponse {
         // Create streaming chat completion
         ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
                 .model("gpt-5-nano")
-                .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                        ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                .content(userMessage)
-                                .build()
-                ))
+                .addMessage(ChatCompletionUserMessageParam.builder()
+                        .content(userMessage)
+                        .build())
                 .temperature(1.0)
                 .maxTokens(10000L)
-                .stream(true)  // Enable streaming
                 .build();
-
-        Stream<ChatCompletionChunk> stream = client.chat().completions().createStreaming(params);
 
         // Collect the full response for later display
         StringBuilder fullResponse = new StringBuilder();
 
-        // Process the stream
-        stream.forEach(chunk -> {
-            // Check if chunk has choices and content - IMPORTANT for avoiding errors
-            if (chunk.choices() != null && !chunk.choices().isEmpty()) {
-                chunk.choices().get(0).delta().content().ifPresent(content -> {
-                    fullResponse.append(content);
-                    // Print the content immediately (streaming effect)
-                    System.out.print(content);
-                    System.out.flush();
-                });
-            }
-        });
+        // createStreaming() enables streaming; try-with-resources closes the connection when done
+        try (StreamResponse<ChatCompletionChunk> stream = client.chat().completions().createStreaming(params)) {
+            // Process the stream
+            stream.stream().forEach(chunk -> {
+                // Check if chunk has choices and content - IMPORTANT for avoiding errors
+                if (chunk.choices() != null && !chunk.choices().isEmpty()) {
+                    chunk.choices().get(0).delta().content().ifPresent(content -> {
+                        fullResponse.append(content);
+                        // Print the content immediately (streaming effect)
+                        System.out.print(content);
+                        System.out.flush();
+                    });
+                }
+            });
+        }
 
         System.out.println("\n\n" + "=".repeat(60));
         System.out.println("Streaming complete!");
@@ -111,42 +108,39 @@ public class Example04_StreamingResponse {
                 .build();
 
         ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
-                .model("gemini-2.5-flash-lite")  // Using Gemini model
-                .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                        ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                .content(userMessage)
-                                .build()
-                ))
+                .model("gemini-3.7-flash")  // Using Gemini model
+                .addMessage(ChatCompletionUserMessageParam.builder()
+                        .content(userMessage)
+                        .build())
                 .temperature(0.7)
                 .maxTokens(10000L)
-                .stream(true)
                 .build();
-
-        Stream<ChatCompletionChunk> stream = client.chat().completions().createStreaming(params);
 
         StringBuilder fullText = new StringBuilder();
         final int[] chunkCount = {0};
 
-        stream.forEach(chunk -> {
-            chunkCount[0]++;
+        try (StreamResponse<ChatCompletionChunk> stream = client.chat().completions().createStreaming(params)) {
+            stream.stream().forEach(chunk -> {
+                chunkCount[0]++;
 
-            // Inspect chunk structure
-            if (chunk.choices() != null && !chunk.choices().isEmpty()) {
-                var delta = chunk.choices().get(0).delta();
+                // Inspect chunk structure
+                if (chunk.choices() != null && !chunk.choices().isEmpty()) {
+                    var delta = chunk.choices().get(0).delta();
 
-                // Check for content
-                delta.content().ifPresent(content -> {
-                    fullText.append(content);
-                    System.out.print(content);
-                    System.out.flush();
-                });
+                    // Check for content
+                    delta.content().ifPresent(content -> {
+                        fullText.append(content);
+                        System.out.print(content);
+                        System.out.flush();
+                    });
 
-                // Check for finish reason
-                chunk.choices().get(0).finishReason().ifPresent(finishReason -> {
-                    System.out.println("\n\nFinish reason: " + finishReason);
-                });
-            }
-        });
+                    // Check for finish reason
+                    chunk.choices().get(0).finishReason().ifPresent(finishReason -> {
+                        System.out.println("\n\nFinish reason: " + finishReason);
+                    });
+                }
+            });
+        }
 
         System.out.println("\n\nTotal chunks received: " + chunkCount[0]);
         System.out.println("Full response length: " + fullText.length() + " characters");
@@ -174,16 +168,13 @@ public class Example04_StreamingResponse {
 
         ChatCompletionCreateParams params1 = ChatCompletionCreateParams.builder()
                 .model("gpt-5-nano")
-                .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                        ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                .content(message)
-                                .build()
-                ))
+                .addMessage(ChatCompletionUserMessageParam.builder()
+                        .content(message)
+                        .build())
                 .maxTokens(10000L)
-                .stream(false)
                 .build();
 
-        var response = client.chat().completions().create(params1);
+        var response = client.chat().completions().create(params1);  // create() = non-streaming
         long endTime = System.currentTimeMillis();
 
         System.out.printf("   Time to first output: %.2f seconds%n", (endTime - startTime) / 1000.0);
@@ -196,30 +187,28 @@ public class Example04_StreamingResponse {
 
         ChatCompletionCreateParams params2 = ChatCompletionCreateParams.builder()
                 .model("gpt-5-nano")
-                .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                        ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                .content(message)
-                                .build()
-                ))
+                .addMessage(ChatCompletionUserMessageParam.builder()
+                        .content(message)
+                        .build())
                 .maxTokens(10000L)
-                .stream(true)
                 .build();
 
-        Stream<ChatCompletionChunk> stream = client.chat().completions().createStreaming(params2);
-
         final boolean[] first = {true};
-        stream.forEach(chunk -> {
-            if (chunk.choices() != null && !chunk.choices().isEmpty()) {
-                chunk.choices().get(0).delta().content().ifPresent(content -> {
-                    if (first[0]) {
-                        firstChunkTime[0] = System.currentTimeMillis();
-                        System.out.printf("   Time to first output: %.2f seconds%n", (firstChunkTime[0] - startTimeStream) / 1000.0);
-                        System.out.println("   First chunk: " + content);
-                        first[0] = false;
-                    }
-                });
-            }
-        });
+        try (StreamResponse<ChatCompletionChunk> stream = client.chat().completions().createStreaming(params2)) {
+            stream.stream().forEach(chunk -> {
+                if (chunk.choices() != null && !chunk.choices().isEmpty()) {
+                    // Skip the empty role-only first chunk so we time the first real text
+                    chunk.choices().get(0).delta().content().filter(c -> !c.isEmpty()).ifPresent(content -> {
+                        if (first[0]) {
+                            firstChunkTime[0] = System.currentTimeMillis();
+                            System.out.printf("   Time to first output: %.2f seconds%n", (firstChunkTime[0] - startTimeStream) / 1000.0);
+                            System.out.println("   First chunk: " + content);
+                            first[0] = false;
+                        }
+                    });
+                }
+            });
+        }
 
         System.out.println("\n   Streaming provides faster time-to-first-token!");
     }

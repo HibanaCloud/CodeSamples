@@ -2,9 +2,12 @@ package com.hibana.samples;
 
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
-import com.openai.models.ChatCompletion;
-import com.openai.models.ChatCompletionCreateParams;
-import com.openai.models.ChatCompletionMessage;
+import com.openai.models.chat.completions.ChatCompletion;
+import com.openai.models.chat.completions.ChatCompletionCreateParams;
+import com.openai.models.chat.completions.ChatCompletionMessageParam;
+import com.openai.models.chat.completions.ChatCompletionSystemMessageParam;
+import com.openai.models.chat.completions.ChatCompletionUserMessageParam;
+import com.openai.models.chat.completions.ChatCompletionAssistantMessageParam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,12 +19,12 @@ import java.util.List;
  * conversation turns. Each message in the conversation is sent to the
  * API, allowing the model to remember previous exchanges.
  *
- * Model used: deepseek-chat (Cost-effective DeepSeek model)
+ * Model used: deepseek-v4-flash (Cost-effective DeepSeek model)
  */
 public class Example03_MultiTurnConversation {
 
-    private static final String API_KEY = "YOUR_API_KEY";
-    private static final String BASE_URL = "https://api-ai.hibanacloud.com/v1";
+    private static final String API_KEY = System.getenv().getOrDefault("HIBANA_API_KEY", "YOUR_API_KEY");
+    private static final String BASE_URL = "https://api-ai.hibanacloud.ir/v1";
 
     public static void main(String[] args) {
         try {
@@ -49,18 +52,18 @@ public class Example03_MultiTurnConversation {
                 .build();
 
         // Conversation history
-        List<ChatCompletionMessage> messages = new ArrayList<>();
+        List<ChatCompletionMessageParam> messages = new ArrayList<>();
 
         // Turn 1
-        messages.add(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
+        messages.add(ChatCompletionMessageParam.ofUser(
+                ChatCompletionUserMessageParam.builder()
                         .content("Hi! My name is Alex.")
                         .build()
         ));
 
         ChatCompletionCreateParams params1 = ChatCompletionCreateParams.builder()
-                .model("deepseek-chat")
-                .addAllMessages(messages)
+                .model("deepseek-v4-flash")
+                .messages(messages)
                 .temperature(1.0)
                 .maxTokens(8192L)
                 .build();
@@ -68,8 +71,8 @@ public class Example03_MultiTurnConversation {
         ChatCompletion response1 = client.chat().completions().create(params1);
         String assistantReply1 = response1.choices().get(0).message().content().orElse("");
 
-        messages.add(ChatCompletionMessage.ofChatCompletionAssistantMessageParam(
-                ChatCompletionMessage.ChatCompletionAssistantMessageParam.builder()
+        messages.add(ChatCompletionMessageParam.ofAssistant(
+                ChatCompletionAssistantMessageParam.builder()
                         .content(assistantReply1)
                         .build()
         ));
@@ -79,15 +82,15 @@ public class Example03_MultiTurnConversation {
         System.out.println("Assistant: " + assistantReply1);
 
         // Turn 2
-        messages.add(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
+        messages.add(ChatCompletionMessageParam.ofUser(
+                ChatCompletionUserMessageParam.builder()
                         .content("What's my name?")
                         .build()
         ));
 
         ChatCompletionCreateParams params2 = ChatCompletionCreateParams.builder()
-                .model("deepseek-chat")
-                .addAllMessages(messages)
+                .model("deepseek-v4-flash")
+                .messages(messages)
                 .temperature(1.0)
                 .maxTokens(8192L)
                 .build();
@@ -114,11 +117,11 @@ public class Example03_MultiTurnConversation {
                 .baseUrl(BASE_URL)
                 .build();
 
-        List<ChatCompletionMessage> messages = new ArrayList<>();
+        List<ChatCompletionMessageParam> messages = new ArrayList<>();
 
         // System message for context
-        messages.add(ChatCompletionMessage.ofChatCompletionSystemMessageParam(
-                ChatCompletionMessage.ChatCompletionSystemMessageParam.builder()
+        messages.add(ChatCompletionMessageParam.ofSystem(
+                ChatCompletionSystemMessageParam.builder()
                         .content("You are a helpful coding tutor.")
                         .build()
         ));
@@ -131,15 +134,15 @@ public class Example03_MultiTurnConversation {
         };
 
         for (String[] turn : turns) {
-            messages.add(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                    ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
+            messages.add(ChatCompletionMessageParam.ofUser(
+                    ChatCompletionUserMessageParam.builder()
                             .content(turn[1])
                             .build()
             ));
 
             ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
-                    .model("deepseek-chat")
-                    .addAllMessages(messages)
+                    .model("deepseek-v4-flash")
+                    .messages(messages)
                     .temperature(0.7)
                     .maxTokens(8192L)
                     .build();
@@ -147,8 +150,8 @@ public class Example03_MultiTurnConversation {
             ChatCompletion response = client.chat().completions().create(params);
             String assistantReply = response.choices().get(0).message().content().orElse("");
 
-            messages.add(ChatCompletionMessage.ofChatCompletionAssistantMessageParam(
-                    ChatCompletionMessage.ChatCompletionAssistantMessageParam.builder()
+            messages.add(ChatCompletionMessageParam.ofAssistant(
+                    ChatCompletionAssistantMessageParam.builder()
                             .content(assistantReply)
                             .build()
             ));

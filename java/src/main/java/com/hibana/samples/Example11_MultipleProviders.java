@@ -2,9 +2,10 @@ package com.hibana.samples;
 
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
-import com.openai.models.ChatCompletion;
-import com.openai.models.ChatCompletionCreateParams;
-import com.openai.models.ChatCompletionMessage;
+import com.openai.models.chat.completions.ChatCompletion;
+import com.openai.models.chat.completions.ChatCompletionCreateParams;
+import com.openai.models.chat.completions.ChatCompletionSystemMessageParam;
+import com.openai.models.chat.completions.ChatCompletionUserMessageParam;
 import com.openai.models.ResponseFormatJsonObject;
 
 import java.util.*;
@@ -18,16 +19,16 @@ import java.util.*;
  */
 public class Example11_MultipleProviders {
 
-    private static final String API_KEY = "YOUR_API_KEY";
-    private static final String BASE_URL = "https://api-ai.hibanacloud.com/v1";
+    private static final String API_KEY = System.getenv().getOrDefault("HIBANA_API_KEY", "YOUR_API_KEY");
+    private static final String BASE_URL = "https://api-ai.hibanacloud.ir/v1";
 
     private static final Map<String, String> MODELS = new LinkedHashMap<>();
 
     static {
         MODELS.put("OpenAI", "gpt-5-nano");
         MODELS.put("Anthropic", "claude-haiku-4-5");
-        MODELS.put("DeepSeek", "deepseek-chat");
-        MODELS.put("Google", "gemini-2.5-flash-lite");
+        MODELS.put("DeepSeek", "deepseek-v4-flash");
+        MODELS.put("Google", "gemini-3.7-flash");
     }
 
     public static void main(String[] args) {
@@ -78,11 +79,9 @@ public class Example11_MultipleProviders {
 
                 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
                         .model(model)
-                        .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                                ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                        .content(question)
-                                        .build()
-                        ))
+                        .addMessage(ChatCompletionUserMessageParam.builder()
+                                .content(question)
+                                .build())
                         .temperature(0.7)
                         .maxTokens(8000L)
                         .build();
@@ -126,16 +125,12 @@ public class Example11_MultipleProviders {
             try {
                 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
                         .model(model)
-                        .addMessage(ChatCompletionMessage.ofChatCompletionSystemMessageParam(
-                                ChatCompletionMessage.ChatCompletionSystemMessageParam.builder()
-                                        .content("You are a Java programming expert.")
-                                        .build()
-                        ))
-                        .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                                ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                        .content(codingQuestion)
-                                        .build()
-                        ))
+                        .addMessage(ChatCompletionSystemMessageParam.builder()
+                                .content("You are a Java programming expert.")
+                                .build())
+                        .addMessage(ChatCompletionUserMessageParam.builder()
+                                .content(codingQuestion)
+                                .build())
                         .temperature(0.3)  // Lower temp for coding
                         .maxTokens(8000L)
                         .build();
@@ -173,11 +168,9 @@ public class Example11_MultipleProviders {
             try {
                 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
                         .model(model)
-                        .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                                ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                        .content(prompt)
-                                        .build()
-                        ))
+                        .addMessage(ChatCompletionUserMessageParam.builder()
+                                .content(prompt)
+                                .build())
                         .temperature(1.0)  // Higher temp for creativity
                         .maxTokens(8000L)
                         .build();
@@ -216,11 +209,9 @@ public class Example11_MultipleProviders {
                 // Warm-up request (not counted)
                 ChatCompletionCreateParams warmupParams = ChatCompletionCreateParams.builder()
                         .model(model)
-                        .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                                ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                        .content("Hi")
-                                        .build()
-                        ))
+                        .addMessage(ChatCompletionUserMessageParam.builder()
+                                .content("Hi")
+                                .build())
                         .maxTokens(8000L)
                         .build();
                 client.chat().completions().create(warmupParams);
@@ -230,11 +221,9 @@ public class Example11_MultipleProviders {
 
                 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
                         .model(model)
-                        .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                                ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                        .content(testMessage)
-                                        .build()
-                        ))
+                        .addMessage(ChatCompletionUserMessageParam.builder()
+                                .content(testMessage)
+                                .build())
                         .temperature(0.5)
                         .maxTokens(8000L)
                         .build();
@@ -298,17 +287,13 @@ public class Example11_MultipleProviders {
         try {
             ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
                     .model("gpt-5-nano")
-                    .addMessage(ChatCompletionMessage.ofChatCompletionSystemMessageParam(
-                            ChatCompletionMessage.ChatCompletionSystemMessageParam.builder()
-                                    .content("Return responses as JSON.")
-                                    .build()
-                    ))
-                    .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                            ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                    .content("Create a JSON object with name and age for a fictional person.")
-                                    .build()
-                    ))
-                    .responseFormat(ResponseFormatJsonObject.builder().type(ResponseFormatJsonObject.Type.JSON_OBJECT).build())
+                    .addMessage(ChatCompletionSystemMessageParam.builder()
+                            .content("Return responses as JSON.")
+                            .build())
+                    .addMessage(ChatCompletionUserMessageParam.builder()
+                            .content("Create a JSON object with name and age for a fictional person.")
+                            .build())
+                    .responseFormat(ResponseFormatJsonObject.builder().build())
                     .build();
 
             ChatCompletion response = client.chat().completions().create(params);
@@ -324,11 +309,9 @@ public class Example11_MultipleProviders {
             String longText = "AI ".repeat(500);  // Simulate longer context
             ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
                     .model("claude-haiku-4-5")
-                    .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                            ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                    .content("Count how many times 'AI' appears in this text: " + longText)
-                                    .build()
-                    ))
+                    .addMessage(ChatCompletionUserMessageParam.builder()
+                            .content("Count how many times 'AI' appears in this text: " + longText)
+                            .build())
                     .maxTokens(8000L)
                     .build();
 
@@ -343,12 +326,10 @@ public class Example11_MultipleProviders {
         System.out.println("-".repeat(60));
         try {
             ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
-                    .model("deepseek-chat")
-                    .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                            ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                    .content("What makes DeepSeek models cost-effective?")
-                                    .build()
-                    ))
+                    .model("deepseek-v4-flash")
+                    .addMessage(ChatCompletionUserMessageParam.builder()
+                            .content("What makes DeepSeek models cost-effective?")
+                            .build())
                     .maxTokens(8000L)
                     .build();
 
@@ -363,12 +344,10 @@ public class Example11_MultipleProviders {
         System.out.println("-".repeat(60));
         try {
             ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
-                    .model("gemini-2.5-flash-lite")
-                    .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                            ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                    .content("List 3 advantages of Gemini models in one sentence each.")
-                                    .build()
-                    ))
+                    .model("gemini-3.7-flash")
+                    .addMessage(ChatCompletionUserMessageParam.builder()
+                            .content("List 3 advantages of Gemini models in one sentence each.")
+                            .build())
                     .maxTokens(8000L)
                     .build();
 
@@ -389,11 +368,11 @@ public class Example11_MultipleProviders {
         System.out.println("=".repeat(60));
 
         Map<String, Recommendation> recommendations = new LinkedHashMap<>();
-        recommendations.put("Speed & Cost", new Recommendation("gpt-5-nano or deepseek-chat", "Fast responses and low cost"));
-        recommendations.put("Coding", new Recommendation("deepseek-chat or gpt-5-nano", "Strong programming capabilities"));
+        recommendations.put("Speed & Cost", new Recommendation("gpt-5-nano or deepseek-v4-flash", "Fast responses and low cost"));
+        recommendations.put("Coding", new Recommendation("deepseek-v4-flash or gpt-5-nano", "Strong programming capabilities"));
         recommendations.put("Creative Writing", new Recommendation("claude-haiku-4-5 or gpt-5-nano", "Excellent creative output"));
         recommendations.put("Long Context", new Recommendation("claude-haiku-4-5", "Large context window"));
-        recommendations.put("Multilingual", new Recommendation("gpt-5-nano or gemini-2.5-flash-lite", "Good multilingual support"));
+        recommendations.put("Multilingual", new Recommendation("gpt-5-nano or gemini-3.7-flash", "Good multilingual support"));
         recommendations.put("JSON Output", new Recommendation("gpt-5-nano", "Native JSON mode support"));
 
         System.out.println("\nTask-Based Model Recommendations:\n");

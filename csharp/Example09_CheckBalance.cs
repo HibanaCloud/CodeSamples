@@ -20,8 +20,8 @@ namespace Hibana.Samples
     public class Example09_CheckBalance
     {
         // API Configuration
-        private static readonly string ApiKey = "YOUR_API_KEY";
-        private static readonly string BaseUrl = "https://api-ai.hibanacloud.com/v1";
+        private static readonly string ApiKey = Environment.GetEnvironmentVariable("HIBANA_API_KEY") ?? "YOUR_API_KEY";
+        private static readonly string BaseUrl = "https://api-ai.hibanacloud.ir/v1";
 
         public static async Task Main(string[] args)
         {
@@ -296,14 +296,15 @@ namespace Hibana.Samples
 
                 Console.WriteLine($"\nCurrent Balance: {balance:N0} Rials\n");
 
-                // Model cost estimates (example values)
+                // Approximate cost in rials of one typical request (2,000 input + 1,000 output tokens),
+                // or of one image (October 2026). Current prices: https://hibanacloud.ir/docs/models
                 var modelCosts = new Dictionary<string, long>
                 {
-                    ["gpt-5-nano"] = 50,
-                    ["claude-haiku-4-5"] = 75,
-                    ["deepseek-chat"] = 40,
-                    ["gemini-2.5-flash-lite"] = 45,
-                    ["dall-e-3"] = 5000
+                    ["gpt-5-nano"] = 2400,
+                    ["claude-haiku-4-5"] = 25600,
+                    ["deepseek-v4-flash"] = 5500,
+                    ["gemini-3.7-flash"] = 19600,
+                    ["gemini-3.1-flash-lite-image"] = 110000
                 };
 
                 Console.WriteLine("Estimated requests per model:");
@@ -319,12 +320,12 @@ namespace Hibana.Samples
 
                 // Recommendations
                 Console.WriteLine("\nRecommendations:");
-                if (balance < 5000)
+                if (balance < 50000)
                 {
                     Console.WriteLine("  • Consider recharging soon");
-                    Console.WriteLine("  • Use cost-efficient models (gpt-5-nano, deepseek-chat)");
+                    Console.WriteLine("  • Use cost-efficient models (gpt-5-nano, deepseek-v4-flash)");
                 }
-                else if (balance < 20000)
+                else if (balance < 500000)
                 {
                     Console.WriteLine("  • Balance is moderate");
                     Console.WriteLine("  • Monitor usage regularly");

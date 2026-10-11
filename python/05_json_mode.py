@@ -8,13 +8,14 @@ and used in your applications.
 Model used: gpt-5-nano (OpenAI model with JSON support)
 """
 
+import os
 from openai import OpenAI
 import json
 
 # Initialize the Hibana client
 client = OpenAI(
-    api_key="YOUR_API_KEY",
-    base_url="https://api-ai.hibanacloud.com/v1"
+    api_key=os.environ.get("HIBANA_API_KEY", "YOUR_API_KEY"),
+    base_url="https://api-ai.hibanacloud.ir/v1"
 )
 
 def basic_json_mode():

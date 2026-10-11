@@ -10,13 +10,14 @@ using the OpenAI Python SDK. It shows how to:
 Model used: gpt-5-nano (Fast and efficient GPT model)
 """
 
+import os
 from openai import OpenAI
 
 # Initialize the Hibana client
-# Replace "YOUR_API_KEY" with your actual Hibana API key
+# Reads your Hibana API key from the HIBANA_API_KEY environment variable
 client = OpenAI(
-    api_key="YOUR_API_KEY",
-    base_url="https://api-ai.hibanacloud.com/v1"
+    api_key=os.environ.get("HIBANA_API_KEY", "YOUR_API_KEY"),
+    base_url="https://api-ai.hibanacloud.ir/v1"
 )
 
 def simple_chat():

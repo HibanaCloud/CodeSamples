@@ -2,9 +2,10 @@ package com.hibana.samples;
 
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
-import com.openai.models.ChatCompletion;
-import com.openai.models.ChatCompletionCreateParams;
-import com.openai.models.ChatCompletionMessage;
+import com.openai.models.chat.completions.ChatCompletion;
+import com.openai.models.chat.completions.ChatCompletionCreateParams;
+import com.openai.models.chat.completions.ChatCompletionSystemMessageParam;
+import com.openai.models.chat.completions.ChatCompletionUserMessageParam;
 
 /**
  * 02 - Chat with System Prompt
@@ -17,8 +18,8 @@ import com.openai.models.ChatCompletionMessage;
  */
 public class Example02_ChatWithSystemPrompt {
 
-    private static final String API_KEY = "YOUR_API_KEY";
-    private static final String BASE_URL = "https://api-ai.hibanacloud.com/v1";
+    private static final String API_KEY = System.getenv().getOrDefault("HIBANA_API_KEY", "YOUR_API_KEY");
+    private static final String BASE_URL = "https://api-ai.hibanacloud.ir/v1";
 
     public static void main(String[] args) {
         try {
@@ -49,16 +50,12 @@ public class Example02_ChatWithSystemPrompt {
 
         ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
                 .model("claude-haiku-4-5")
-                .addMessage(ChatCompletionMessage.ofChatCompletionSystemMessageParam(
-                        ChatCompletionMessage.ChatCompletionSystemMessageParam.builder()
-                                .content("You are a helpful assistant that speaks like a pirate.")
-                                .build()
-                ))
-                .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                        ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                .content("Tell me about cloud computing in two sentences.")
-                                .build()
-                ))
+                .addMessage(ChatCompletionSystemMessageParam.builder()
+                        .content("You are a helpful assistant that speaks like a pirate.")
+                        .build())
+                .addMessage(ChatCompletionUserMessageParam.builder()
+                        .content("Tell me about cloud computing in two sentences.")
+                        .build())
                 .temperature(1.0)
                 .maxTokens(10000L)
                 .build();
@@ -91,16 +88,12 @@ public class Example02_ChatWithSystemPrompt {
 
         ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
                 .model("claude-haiku-4-5")
-                .addMessage(ChatCompletionMessage.ofChatCompletionSystemMessageParam(
-                        ChatCompletionMessage.ChatCompletionSystemMessageParam.builder()
-                                .content(systemPrompt)
-                                .build()
-                ))
-                .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                        ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                .content("How do I handle exceptions in Java? Give me one tip.")
-                                .build()
-                ))
+                .addMessage(ChatCompletionSystemMessageParam.builder()
+                        .content(systemPrompt)
+                        .build())
+                .addMessage(ChatCompletionUserMessageParam.builder()
+                        .content("How do I handle exceptions in Java? Give me one tip.")
+                        .build())
                 .temperature(0.7)
                 .maxTokens(10000L)
                 .build();
@@ -133,16 +126,12 @@ public class Example02_ChatWithSystemPrompt {
 
         ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
                 .model("claude-haiku-4-5")
-                .addMessage(ChatCompletionMessage.ofChatCompletionSystemMessageParam(
-                        ChatCompletionMessage.ChatCompletionSystemMessageParam.builder()
-                                .content(systemPrompt)
-                                .build()
-                ))
-                .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                        ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                .content("What are the benefits of microservices?")
-                                .build()
-                ))
+                .addMessage(ChatCompletionSystemMessageParam.builder()
+                        .content(systemPrompt)
+                        .build())
+                .addMessage(ChatCompletionUserMessageParam.builder()
+                        .content("What are the benefits of microservices?")
+                        .build())
                 .temperature(0.7)
                 .maxTokens(10000L)
                 .build();

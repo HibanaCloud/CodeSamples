@@ -131,6 +131,9 @@ build/
 !gradle-wrapper.jar
 gradle-*.zip
 
+# A local Gradle distribution unpacked next to the project (java/gradle-7.6/)
+java/gradle-*/
+
 # Maven (if used)
 target/
 pom.xml.tag

@@ -1,233 +1,150 @@
-# Hibana API - Code Samples
+# Hibana API · Code Samples · نمونه‌کدهای API هیبانا
 
-Code samples demonstrating how to use the Hibana AI API in multiple programming languages. Hibana provides a unified OpenAI-compatible API gateway for multiple LLM providers including OpenAI, Anthropic, DeepSeek, and Google Gemini.
+**هیبانا — درگاه API هوش مصنوعی سازگار با OpenAI با پرداخت ریالی**
+**Hibana — an OpenAI-compatible AI API gateway for Iran, billed in rials.**
 
-## Features
+[hibanacloud.ir](https://hibanacloud.ir) · [Docs / مستندات](https://hibanacloud.ir/docs) · [Models / مدل‌ها](https://hibanacloud.ir/docs/models) · [Get an API key / دریافت کلید](https://hibanacloud.ir/docs/get-api-key) · [Blog / بلاگ](https://hibanacloud.ir/blog)
 
-- **OpenAI-Compatible**: Use official OpenAI SDKs
-- **Multiple Providers**: Access GPT, Claude, DeepSeek, and Gemini models through one API
-- **Streaming Support**: Real-time streaming responses
-- **Image Generation**: DALL-E integration
-- **Cost-Effective**: Pay-as-you-go pricing in Iranian Rials
+---
 
-## Available Languages
+## فارسی
 
-### 🐍 [Python Samples](python/)
+با یک کلید API به مدل‌های OpenAI (GPT)، آنتروپیک (Claude)، گوگل (Gemini)، دیپ‌سیک و مدل‌های دیگر دسترسی دارید و هزینه از کیف پول ریالی کم می‌شود. هیبانا با کتابخانه‌های رسمی OpenAI سازگار است: کد فعلی‌تان را نگه دارید و فقط آدرس پایه (`base_url`) و کلید را عوض کنید. مدل‌هایی مثل `gpt-oss` و `bge-m3` روی سرورهای خود هیبانا اجرا می‌شوند و هنگام قطعی اینترنت بین‌الملل هم در دسترس‌اند.
 
-Complete set of Python examples using the OpenAI Python SDK.
+**شروع سریع**
 
-```bash
-cd python
-pip install -r requirements.txt
-python 01_simple_chat.py
-```
-
-**[View Python README →](python/README.md)**
-
-### 📦 [JavaScript/Node.js Samples](javascript/)
-
-Complete set of JavaScript examples using the OpenAI Node.js SDK.
+۱. از [داشبورد هیبانا](https://hibanacloud.ir/docs/get-api-key) یک کلید API بسازید.
+۲. کلید را در متغیر محیطی `HIBANA_API_KEY` بگذارید. همهٔ نمونه‌ها کلید را از همین‌جا می‌خوانند.
+۳. یکی از نمونه‌ها را اجرا کنید (دستورها در بخش زبان‌ها در ادامه).
 
 ```bash
-cd javascript
-npm install
-node 01_simple_chat.js
+export HIBANA_API_KEY="کلید شما"        # Windows PowerShell: $env:HIBANA_API_KEY="کلید شما"
+cd python && pip install -r requirements.txt && python 01_simple_chat.py
 ```
 
-**[View JavaScript README →](javascript/README.md)**
+راهنمای اتصال هیبانا به Cline، Cursor، Kilo Code، VS Code، n8n و AnythingLLM در [INTEGRATIONS.md](INTEGRATIONS.md) است.
 
-### ☕ [Java Samples](java/)
+---
 
-Complete set of Java examples using the OpenAI Java SDK.
+## English
+
+One API key gives you OpenAI (GPT), Anthropic (Claude), Google (Gemini), DeepSeek and other models, paid from a wallet in Iranian rials. Hibana works with the official OpenAI SDKs: keep your code and change only the base URL and the key. Models such as `gpt-oss` and `bge-m3` run on Hibana's own servers in Iran and stay available during international internet cutoffs.
+
+**Quick start**
+
+1. Create an API key ([how](https://hibanacloud.ir/docs/get-api-key)).
+2. Put it in the `HIBANA_API_KEY` environment variable. Every sample reads the key from there.
+3. Run a sample:
 
 ```bash
-cd java
-./gradlew build
-./gradlew run --args="Example01_SimpleChat"
+export HIBANA_API_KEY="your-key"        # Windows PowerShell: $env:HIBANA_API_KEY="your-key"
+cd python && pip install -r requirements.txt && python 01_simple_chat.py
 ```
 
-**[View Java README →](java/README.md)**
+Settings for Cline, Cursor, Kilo Code, VS Code, n8n and AnythingLLM: [INTEGRATIONS.md](INTEGRATIONS.md).
 
-### 🔷 [C# Samples](csharp/)
-
-Complete set of C# examples using the OpenAI .NET SDK.
-
-```bash
-cd csharp
-dotnet build
-dotnet run
-```
-
-**[View C# README →](csharp/README.md)**
-
-## Quick Start
-
-### API Configuration
-
-All samples use the following configuration:
-
-- **Base URL**: `https://api-ai.hibanacloud.com/v1`
-- **Authentication**: Bearer token (API Key)
-- **API Key**: Replace `YOUR_API_KEY` with your actual key from the Hibana dashboard
-
-### Python Example
+### The only change to existing OpenAI code
 
 ```python
+import os
 from openai import OpenAI
 
 client = OpenAI(
-    api_key="YOUR_API_KEY",
-    base_url="https://api-ai.hibanacloud.com/v1"
+    api_key=os.environ["HIBANA_API_KEY"],
+    base_url="https://api-ai.hibanacloud.ir/v1",
 )
 
 response = client.chat.completions.create(
-    model="gpt-5-nano",
-    messages=[{"role": "user", "content": "Hello!"}]
+    model="claude-haiku-4-5",          # or gpt-5-nano, gemini-3.7-flash, deepseek-v4-flash, ...
+    messages=[{"role": "user", "content": "Hello!"}],
 )
-
 print(response.choices[0].message.content)
 ```
-
-### JavaScript Example
 
 ```javascript
 import OpenAI from 'openai';
 
 const client = new OpenAI({
-    apiKey: "YOUR_API_KEY",
-    baseURL: "https://api-ai.hibanacloud.com/v1"
+    apiKey: process.env.HIBANA_API_KEY,
+    baseURL: "https://api-ai.hibanacloud.ir/v1",
 });
 
 const response = await client.chat.completions.create({
-    model: "gpt-5-nano",
-    messages: [{ role: "user", content: "Hello!" }]
+    model: "claude-haiku-4-5",
+    messages: [{ role: "user", content: "Hello!" }],
 });
-
 console.log(response.choices[0].message.content);
 ```
 
-### Java Example
-
-```java
-import com.openai.client.OpenAIClient;
-import com.openai.client.okhttp.OpenAIOkHttpClient;
-import com.openai.models.*;
-
-OpenAIClient client = OpenAIOkHttpClient.builder()
-    .apiKey("YOUR_API_KEY")
-    .baseUrl("https://api-ai.hibanacloud.com/v1")
-    .build();
-
-ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
-    .model("gpt-5-nano")
-    .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-        ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-            .content("Hello!")
-            .build()
-    ))
-    .build();
-
-ChatCompletion response = client.chat().completions().create(params);
-System.out.println(response.choices().get(0).message().content().orElse(""));
-```
-
-### C# Example
-
 ```csharp
-using System;
 using System.ClientModel;
 using OpenAI;
 using OpenAI.Chat;
 
 var client = new OpenAIClient(
-    new ApiKeyCredential("YOUR_API_KEY"),
-    new OpenAIClientOptions
-    {
-        Endpoint = new Uri("https://api-ai.hibanacloud.com/v1")
-    }
-);
+    new ApiKeyCredential(Environment.GetEnvironmentVariable("HIBANA_API_KEY")!),
+    new OpenAIClientOptions { Endpoint = new Uri("https://api-ai.hibanacloud.ir/v1") });
 
-var chatClient = client.GetChatClient("gpt-5-nano");
-
-var response = await chatClient.CompleteChatAsync(
-    new[] { new UserChatMessage("Hello!") }
-);
-
-Console.WriteLine(response.Value.Content[0].Text);
+ChatClient chat = client.GetChatClient("claude-haiku-4-5");
+ChatCompletion completion = await chat.CompleteChatAsync(new UserChatMessage("Hello!"));
+Console.WriteLine(completion.Content[0].Text);
 ```
-
-## Sample Categories
-
-All samples are available in Python, JavaScript, Java, and C#:
-
-### 📚 Basic Examples
-1. **Simple Chat** - Basic chat completion
-2. **System Prompts** - Control AI behavior with system messages
-3. **Multi-turn Conversations** - Maintain context across messages
-
-### ⚡ Advanced Features
-4. **Streaming** - Real-time streaming responses
-5. **JSON Mode** - Structured JSON output
-6. **Responses API** - Simplified API format
-
-### 🎨 Additional Capabilities
-7. **Image Generation** - Create images with DALL-E
-8. **List Models** - Discover available models
-9. **Check Balance** - Monitor wallet balance
-
-### ✅ Best Practices
-10. **Error Handling** - Proper error handling and retry logic
-11. **Multiple Providers** - Compare all 4 providers
-
-## OpenAI SDK Compatibility
-
-Hibana is 100% compatible with OpenAI SDKs. You can use any OpenAI SDK features by simply changing:
-- **API Key**: Your Hibana API key
-- **Base URL**: `https://api-ai.hibanacloud.com/v1`
-
-This means existing OpenAI code can be migrated to Hibana with minimal changes!
-
-## Getting Your API Key
-
-1. Sign up at [Hibana Cloud Dashboard](https://hibanacloud.com/dashboard)
-2. Navigate to API Keys section
-3. Create a new API key
-4. Replace `YOUR_API_KEY` in the samples with your actual key
-
-## Common Issues
-
-### Authentication Error
-- Ensure your API key is correct
-- Check that the key is active in your dashboard
-- Verify the Bearer token format
-
-### Model Not Found
-- Check available models using sample `08_list_models`
-- Ensure the model is enabled in your account
-- Use exact model names from the supported models table
-
-### Rate Limiting
-- Hibana implements rate limiting per model
-- See sample `10_error_handling` for retry strategies
-- Consider implementing exponential backoff
-
-## Documentation
-
-- **API Documentation**: [https://hibanacloud.com/docs](https://hibanacloud.com/docs)
-- **Dashboard**: [https://hibanacloud.com/dashboard](https://hibanacloud.com/dashboard)
-- **Support Email**: support@hibanacloud.com
-
-## Contributing
-
-Found an issue or want to add more examples? Feel free to:
-- Open an issue
-- Submit a pull request
-- Contact us with suggestions
-
-## License
-
-These code samples are provided as-is for educational and integration purposes.
 
 ---
 
-**Happy coding with Hibana AI!** 🚀
+## Samples · نمونه‌ها
+
+| # | Sample | Python | JavaScript | C# | Java |
+| --- | --- | :-: | :-: | :-: | :-: |
+| 01 | Simple chat | ✓ | ✓ | ✓ | ✓ |
+| 02 | System prompt | ✓ | ✓ | ✓ | ✓ |
+| 03 | Multi-turn conversation | ✓ | ✓ | ✓ | ✓ |
+| 04 | Streaming | ✓ | ✓ | ✓ | ✓ |
+| 05 | JSON mode | ✓ | ✓ | ✓ | ✓ |
+| 06 | Responses API | ✓ | ✓ | ✓ | ✓ |
+| 07 | Image generation (`gemini-3.1-flash-lite-image`) | ✓ | ✓ | ✓ | ✓ |
+| 08 | List models | ✓ | ✓ | ✓ | ✓ |
+| 09 | Wallet balance | ✓ | ✓ | ✓ | ✓ |
+| 10 | Error handling | ✓ | ✓ | ✓ | ✓ |
+| 11 | Several providers side by side | ✓ | ✓ | ✓ | ✓ |
+| 12 | Semantic search in Persian with embeddings (`bge-m3`) | ✓ | ✓ | | |
+| 13 | Fallback to a domestic model during an internet cutoff (`gpt-oss`) | ✓ | ✓ | | |
+
+### Python
+```bash
+cd python
+pip install -r requirements.txt
+python 01_simple_chat.py
+```
+[python/README.md](python/README.md)
+
+### JavaScript / Node.js (18+)
+```bash
+cd javascript
+npm install
+node 01_simple_chat.js
+```
+[javascript/README.md](javascript/README.md)
+
+### C# / .NET 9
+```bash
+cd csharp
+dotnet run -p:StartupObject=Hibana.Samples.Example01_SimpleChat
+```
+[csharp/README.md](csharp/README.md)
+
+### Java (17+)
+See [java/README.md](java/README.md).
+
+---
+
+## Notes
+
+- **Models**: use exact model IDs from [hibanacloud.ir/docs/models](https://hibanacloud.ir/docs/models) or sample `08`. The list, prices and context sizes are live there.
+- **Images**: `size` is an aspect ratio (`"1:1"`, `"16:9"`, …) and the returned URL expires after about an hour. Download it (sample `07`).
+- **Errors**: `401` bad key · `402` wallet balance too low · `429` rate limit. See sample `10` and [hibanacloud.ir/docs/errors](https://hibanacloud.ir/docs/errors).
+- **Support**: support@hibanacloud.ir
+
+## License
+
+See [LICENSE](LICENSE).

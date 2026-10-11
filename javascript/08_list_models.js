@@ -12,8 +12,8 @@ import OpenAI from 'openai';
 
 // Initialize the Hibana client
 const client = new OpenAI({
-    apiKey: "YOUR_API_KEY",
-    baseURL: "https://api-ai.hibanacloud.com/v1"
+    apiKey: process.env.HIBANA_API_KEY ?? "YOUR_API_KEY",
+    baseURL: "https://api-ai.hibanacloud.ir/v1"
 });
 
 async function listAllModels() {
@@ -94,7 +94,7 @@ async function filterModelsByType() {
     models.data.forEach(model => {
         const modelId = model.id.toLowerCase();
 
-        if (modelId.includes('dall-e') || modelId.includes('dalle')) {
+        if (modelId.includes('image') || modelId.includes('dall-e')) {
             imageModels.push(model.id);
         } else if (['gpt', 'claude', 'deepseek', 'gemini'].some(x => modelId.includes(x))) {
             chatModels.push(model.id);
@@ -139,8 +139,13 @@ async function getSpecificModelInfo() {
     console.log(`\nQuerying model: ${modelId}`);
 
     try {
-        // Retrieve specific model
-        const model = await client.models.retrieve(modelId);
+        // Look the model up in the list (Hibana serves GET /v1/models, not /v1/models/{id})
+        const models = await client.models.list();
+        const model = models.data.find((m) => m.id === modelId);
+        if (!model) {
+            console.log(`${modelId} is not available to this API key`);
+            return;
+        }
 
         console.log("\nModel Details:");
         console.log("-".repeat(40));
@@ -175,9 +180,9 @@ async function checkModelAvailability() {
     const modelsToCheck = [
         "gpt-5-nano",
         "claude-haiku-4-5",
-        "deepseek-chat",
-        "gemini-2.5-flash-lite",
-        "dall-e-3"
+        "deepseek-v4-flash",
+        "gemini-3.7-flash",
+        "gemini-3.1-flash-lite-image"
     ];
 
     console.log("\nChecking availability...\n");
@@ -216,7 +221,7 @@ async function displayModelsTable() {
 
         // Determine type
         let modelType;
-        if (modelId.toLowerCase().includes('dall-e')) {
+        if (modelId.toLowerCase().includes('image') || modelId.toLowerCase().includes('dall-e')) {
             modelType = "Image";
         } else if (['gpt', 'claude', 'deepseek', 'gemini'].some(x => modelId.toLowerCase().includes(x))) {
             modelType = "Chat";

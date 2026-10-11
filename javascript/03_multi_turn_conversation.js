@@ -5,15 +5,15 @@
  * across multiple messages. The AI can reference previous messages
  * and maintain a coherent conversation flow.
  *
- * Model used: deepseek-chat (DeepSeek conversational model)
+ * Model used: deepseek-v4-flash (DeepSeek conversational model)
  */
 
 import OpenAI from 'openai';
 
 // Initialize the Hibana client
 const client = new OpenAI({
-    apiKey: "YOUR_API_KEY",
-    baseURL: "https://api-ai.hibanacloud.com/v1"
+    apiKey: process.env.HIBANA_API_KEY ?? "YOUR_API_KEY",
+    baseURL: "https://api-ai.hibanacloud.ir/v1"
 });
 
 async function multiTurnConversation() {
@@ -34,14 +34,14 @@ async function multiTurnConversation() {
     ];
 
     console.log("=".repeat(60));
-    console.log("Multi-Turn Conversation with deepseek-chat");
+    console.log("Multi-Turn Conversation with deepseek-v4-flash");
     console.log("=".repeat(60));
 
     // First exchange
     console.log("\nUser: Hi! I'm learning Python. Can you help me?");
 
     const response1 = await client.chat.completions.create({
-        model: "deepseek-chat",
+        model: "deepseek-v4-flash",
         messages: conversationHistory,
         temperature: 0.8,
         max_tokens: 8192
@@ -66,7 +66,7 @@ async function multiTurnConversation() {
     console.log(`\nUser: ${userMessage2}`);
 
     const response2 = await client.chat.completions.create({
-        model: "deepseek-chat",
+        model: "deepseek-v4-flash",
         messages: conversationHistory,
         temperature: 0.8,
         max_tokens: 8192
@@ -91,7 +91,7 @@ async function multiTurnConversation() {
     console.log(`\nUser: ${userMessage3}`);
 
     const response3 = await client.chat.completions.create({
-        model: "deepseek-chat",
+        model: "deepseek-v4-flash",
         messages: conversationHistory,
         temperature: 0.8,
         max_tokens: 8192
@@ -138,7 +138,7 @@ function interactiveConversation() {
             conversation.push({ role: "user", content: input });
 
             const response = await client.chat.completions.create({
-                model: "deepseek-chat",
+                model: "deepseek-v4-flash",
                 messages: conversation,
                 temperature: 0.8
             });

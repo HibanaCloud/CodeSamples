@@ -4,9 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
-import com.openai.models.ChatCompletion;
-import com.openai.models.ChatCompletionCreateParams;
-import com.openai.models.ChatCompletionMessage;
+import com.openai.models.chat.completions.ChatCompletion;
+import com.openai.models.chat.completions.ChatCompletionCreateParams;
+import com.openai.models.chat.completions.ChatCompletionSystemMessageParam;
+import com.openai.models.chat.completions.ChatCompletionUserMessageParam;
 import com.openai.models.ResponseFormatJsonObject;
 
 /**
@@ -20,8 +21,8 @@ import com.openai.models.ResponseFormatJsonObject;
  */
 public class Example05_JsonMode {
 
-    private static final String API_KEY = "YOUR_API_KEY";
-    private static final String BASE_URL = "https://api-ai.hibanacloud.com/v1";
+    private static final String API_KEY = System.getenv().getOrDefault("HIBANA_API_KEY", "YOUR_API_KEY");
+    private static final String BASE_URL = "https://api-ai.hibanacloud.ir/v1";
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     public static void main(String[] args) {
@@ -53,17 +54,13 @@ public class Example05_JsonMode {
 
         ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
                 .model("gpt-5-nano")
-                .addMessage(ChatCompletionMessage.ofChatCompletionSystemMessageParam(
-                        ChatCompletionMessage.ChatCompletionSystemMessageParam.builder()
-                                .content("You are a helpful assistant that outputs JSON.")
-                                .build()
-                ))
-                .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                        ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                .content("Create a JSON object with information about a fictional person (name, age, city).")
-                                .build()
-                ))
-                .responseFormat(ResponseFormatJsonObject.builder().type(ResponseFormatJsonObject.Type.JSON_OBJECT).build())
+                .addMessage(ChatCompletionSystemMessageParam.builder()
+                        .content("You are a helpful assistant that outputs JSON.")
+                        .build())
+                .addMessage(ChatCompletionUserMessageParam.builder()
+                        .content("Create a JSON object with information about a fictional person (name, age, city).")
+                        .build())
+                .responseFormat(ResponseFormatJsonObject.builder().build())
                 .temperature(1.0)
                 .maxTokens(10000L)
                 .build();
@@ -101,17 +98,13 @@ public class Example05_JsonMode {
 
         ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
                 .model("gpt-5-nano")
-                .addMessage(ChatCompletionMessage.ofChatCompletionSystemMessageParam(
-                        ChatCompletionMessage.ChatCompletionSystemMessageParam.builder()
-                                .content("Extract structured data and return as JSON.")
-                                .build()
-                ))
-                .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                        ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                .content(userMessage)
-                                .build()
-                ))
-                .responseFormat(ResponseFormatJsonObject.builder().type(ResponseFormatJsonObject.Type.JSON_OBJECT).build())
+                .addMessage(ChatCompletionSystemMessageParam.builder()
+                        .content("Extract structured data and return as JSON.")
+                        .build())
+                .addMessage(ChatCompletionUserMessageParam.builder()
+                        .content(userMessage)
+                        .build())
+                .responseFormat(ResponseFormatJsonObject.builder().build())
                 .temperature(0.3)
                 .maxTokens(10000L)
                 .build();
@@ -144,17 +137,13 @@ public class Example05_JsonMode {
 
         ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
                 .model("gpt-5-nano")
-                .addMessage(ChatCompletionMessage.ofChatCompletionSystemMessageParam(
-                        ChatCompletionMessage.ChatCompletionSystemMessageParam.builder()
-                                .content("Return structured JSON data as requested.")
-                                .build()
-                ))
-                .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                        ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                .content(userMessage)
-                                .build()
-                ))
-                .responseFormat(ResponseFormatJsonObject.builder().type(ResponseFormatJsonObject.Type.JSON_OBJECT).build())
+                .addMessage(ChatCompletionSystemMessageParam.builder()
+                        .content("Return structured JSON data as requested.")
+                        .build())
+                .addMessage(ChatCompletionUserMessageParam.builder()
+                        .content(userMessage)
+                        .build())
+                .responseFormat(ResponseFormatJsonObject.builder().build())
                 .temperature(0.7)
                 .maxTokens(10000L)
                 .build();

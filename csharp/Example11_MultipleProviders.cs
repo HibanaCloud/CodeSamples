@@ -19,16 +19,16 @@ namespace Hibana.Samples
 {
     public class Example11_MultipleProviders
     {
-        private static readonly string ApiKey = "YOUR_API_KEY";
-        private static readonly string BaseUrl = "https://api-ai.hibanacloud.com/v1";
+        private static readonly string ApiKey = Environment.GetEnvironmentVariable("HIBANA_API_KEY") ?? "YOUR_API_KEY";
+        private static readonly string BaseUrl = "https://api-ai.hibanacloud.ir/v1";
 
         // Define models for each provider
         private static readonly Dictionary<string, string> Models = new()
         {
             ["OpenAI"] = "gpt-5-nano",
             ["Anthropic"] = "claude-haiku-4-5",
-            ["DeepSeek"] = "deepseek-chat",
-            ["Google"] = "gemini-2.5-flash-lite"
+            ["DeepSeek"] = "deepseek-v4-flash",
+            ["Google"] = "gemini-3.7-flash"
         };
 
         public static async Task Main(string[] args)
@@ -417,7 +417,7 @@ namespace Hibana.Samples
             Console.WriteLine(new string('-', 60));
             try
             {
-                var chatClient = client.GetChatClient("deepseek-chat");
+                var chatClient = client.GetChatClient("deepseek-v4-flash");
                 var response = await chatClient.CompleteChatAsync(
                     messages: new[] { new UserChatMessage("What makes DeepSeek models cost-effective?") },
                     options: new ChatCompletionOptions { MaxOutputTokenCount = 8000 }
@@ -434,7 +434,7 @@ namespace Hibana.Samples
             Console.WriteLine(new string('-', 60));
             try
             {
-                var chatClient = client.GetChatClient("gemini-2.5-flash-lite");
+                var chatClient = client.GetChatClient("gemini-3.7-flash");
                 var response = await chatClient.CompleteChatAsync(
                     messages: new[] { new UserChatMessage("List 3 advantages of Gemini models in one sentence each.") },
                     options: new ChatCompletionOptions { MaxOutputTokenCount = 8000 }
@@ -458,11 +458,11 @@ namespace Hibana.Samples
 
             var recommendations = new Dictionary<string, (string Model, string Reason)>
             {
-                ["Speed & Cost"] = ("gpt-5-nano or deepseek-chat", "Fast responses and low cost"),
-                ["Coding"] = ("deepseek-chat or gpt-5-nano", "Strong programming capabilities"),
+                ["Speed & Cost"] = ("gpt-5-nano or deepseek-v4-flash", "Fast responses and low cost"),
+                ["Coding"] = ("deepseek-v4-flash or gpt-5-nano", "Strong programming capabilities"),
                 ["Creative Writing"] = ("claude-haiku-4-5 or gpt-5-nano", "Excellent creative output"),
                 ["Long Context"] = ("claude-haiku-4-5", "Large context window"),
-                ["Persian/Multilingual"] = ("gpt-5-nano or gemini-2.5-flash-lite", "Good multilingual support"),
+                ["Persian/Multilingual"] = ("gpt-5-nano or gemini-3.7-flash", "Good multilingual support"),
                 ["JSON Output"] = ("gpt-5-nano", "Native JSON mode support")
             };
 

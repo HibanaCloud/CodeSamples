@@ -11,8 +11,8 @@
 import axios from 'axios';
 
 // API Configuration
-const API_KEY = "YOUR_API_KEY";
-const BASE_URL = "https://api-ai.hibanacloud.com/v1";
+const API_KEY = process.env.HIBANA_API_KEY ?? "YOUR_API_KEY";
+const BASE_URL = "https://api-ai.hibanacloud.ir/v1";
 
 async function checkBalance() {
     /**
@@ -216,13 +216,14 @@ async function balanceCheckWithUsageHistory() {
 
             console.log(`\nCurrent Balance: ${balance.toLocaleString()} Rials\n`);
 
-            // Model cost estimates (example values)
+            // Approximate cost in rials of one typical request (2,000 input + 1,000 output tokens),
+            // or of one image (October 2026). Current prices: https://hibanacloud.ir/docs/models
             const modelCosts = {
-                "gpt-5-nano": 50,
-                "claude-haiku-4-5": 75,
-                "deepseek-chat": 40,
-                "gemini-2.5-flash-lite": 45,
-                "dall-e-3": 5000
+                "gpt-5-nano": 2400,
+                "claude-haiku-4-5": 25600,
+                "deepseek-v4-flash": 5500,
+                "gemini-3.7-flash": 19600,
+                "gemini-3.1-flash-lite-image": 110000
             };
 
             console.log("Estimated requests per model:");
@@ -237,10 +238,10 @@ async function balanceCheckWithUsageHistory() {
 
             // Recommendations
             console.log("\nRecommendations:");
-            if (balance < 5000) {
+            if (balance < 50000) {
                 console.log("  • Consider recharging soon");
-                console.log("  • Use cost-efficient models (gpt-5-nano, deepseek-chat)");
-            } else if (balance < 20000) {
+                console.log("  • Use cost-efficient models (gpt-5-nano, deepseek-v4-flash)");
+            } else if (balance < 500000) {
                 console.log("  • Balance is moderate");
                 console.log("  • Monitor usage regularly");
             } else {

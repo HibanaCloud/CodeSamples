@@ -2,9 +2,9 @@ package com.hibana.samples;
 
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
-import com.openai.models.ChatCompletion;
-import com.openai.models.ChatCompletionCreateParams;
-import com.openai.models.ChatCompletionMessage;
+import com.openai.models.chat.completions.ChatCompletion;
+import com.openai.models.chat.completions.ChatCompletionCreateParams;
+import com.openai.models.chat.completions.ChatCompletionUserMessageParam;
 
 /**
  * 01 - Simple Chat Completion
@@ -20,8 +20,8 @@ import com.openai.models.ChatCompletionMessage;
 public class Example01_SimpleChat {
 
     // API Configuration
-    private static final String API_KEY = "YOUR_API_KEY";
-    private static final String BASE_URL = "https://api-ai.hibanacloud.com/v1";
+    private static final String API_KEY = System.getenv().getOrDefault("HIBANA_API_KEY", "YOUR_API_KEY");
+    private static final String BASE_URL = "https://api-ai.hibanacloud.ir/v1";
 
     public static void main(String[] args) {
         try {
@@ -48,11 +48,9 @@ public class Example01_SimpleChat {
         // Create a chat completion
         ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
                 .model("gpt-5-nano")  // Fast OpenAI model
-                .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                        ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                .content("Hello! Please introduce yourself in one sentence.")
-                                .build()
-                ))
+                .addMessage(ChatCompletionUserMessageParam.builder()
+                        .content("Hello! Please introduce yourself in one sentence.")
+                        .build())
                 .temperature(1.0)  // Controls randomness (0.0 = deterministic, 2.0 = very random)
                 .maxTokens(10000L)    // Maximum tokens in the response
                 .build();

@@ -20,8 +20,8 @@ namespace Hibana.Samples
 {
     public class Example08_ListModels
     {
-        private static readonly string ApiKey = "YOUR_API_KEY";
-        private static readonly string BaseUrl = "https://api-ai.hibanacloud.com/v1";
+        private static readonly string ApiKey = Environment.GetEnvironmentVariable("HIBANA_API_KEY") ?? "YOUR_API_KEY";
+        private static readonly string BaseUrl = "https://api-ai.hibanacloud.ir/v1";
 
         // Model info class for deserialization
         public class ModelInfo
@@ -176,7 +176,7 @@ namespace Hibana.Samples
             {
                 string modelId = model.id.ToLower();
 
-                if (modelId.Contains("dall-e") || modelId.Contains("dalle"))
+                if (modelId.Contains("image") || modelId.Contains("dall-e"))
                 {
                     imageModels.Add(model.id);
                 }
@@ -237,15 +237,21 @@ namespace Hibana.Samples
                 httpClient.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue("application/json"));
 
-                string url = $"{BaseUrl}/models/{modelId}";
+                // Look the model up in the list (Hibana serves GET /v1/models, not /v1/models/{id})
+                string url = $"{BaseUrl}/models";
                 var response = await httpClient.GetAsync(url);
 
                 if (response.IsSuccessStatusCode)
                 {
                     string jsonResponse = await response.Content.ReadAsStringAsync();
-                    var model = JsonSerializer.Deserialize<ModelInfo>(jsonResponse);
+                    var models = JsonSerializer.Deserialize<ModelsResponse>(jsonResponse);
+                    var model = models?.data.Find(m => m.id == modelId);
 
-                    if (model != null)
+                    if (model == null)
+                    {
+                        Console.WriteLine($"{modelId} is not available to this API key");
+                    }
+                    else
                     {
                         Console.WriteLine("\nModel Details:");
                         Console.WriteLine(new string('-', 40));
@@ -285,9 +291,9 @@ namespace Hibana.Samples
             {
                 "gpt-5-nano",
                 "claude-haiku-4-5",
-                "deepseek-chat",
-                "gemini-2.5-flash-lite",
-                "dall-e-3"
+                "deepseek-v4-flash",
+                "gemini-3.7-flash",
+                "gemini-3.1-flash-lite-image"
             };
 
             Console.WriteLine("\nChecking availability...\n");
@@ -328,7 +334,7 @@ namespace Hibana.Samples
 
                 // Determine type
                 string modelType;
-                if (modelId.ToLower().Contains("dall-e"))
+                if (modelId.ToLower().Contains("image") || modelId.ToLower().Contains("dall-e"))
                 {
                     modelType = "Image";
                 }

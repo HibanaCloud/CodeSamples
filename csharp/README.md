@@ -38,7 +38,7 @@ var client = new OpenAIClient(
     new ApiKeyCredential("YOUR_API_KEY"),
     new OpenAIClientOptions
     {
-        Endpoint = new Uri("https://api-ai.hibanacloud.com/v1")
+        Endpoint = new Uri("https://api-ai.hibanacloud.ir/v1")
     }
 );
 ```
@@ -55,13 +55,13 @@ var client = new OpenAIClient(
 |------|-------------|-------|
 | `Example01_SimpleChat.cs` | Basic chat completion | gpt-5-nano |
 | `Example02_ChatWithSystemPrompt.cs` | Custom system instructions | claude-haiku-4-5, gpt-5-nano |
-| `Example03_MultiTurnConversation.cs` | Multi-message conversations | deepseek-chat |
+| `Example03_MultiTurnConversation.cs` | Multi-message conversations | deepseek-v4-flash |
 
 ### Advanced Features
 
 | File | Description | Model |
 |------|-------------|-------|
-| `Example04_StreamingResponse.cs` | Real-time streaming responses | gpt-5-nano, gemini-2.5-flash-lite |
+| `Example04_StreamingResponse.cs` | Real-time streaming responses | gpt-5-nano, gemini-3.7-flash |
 | `Example05_JsonMode.cs` | Structured JSON output | gpt-5-nano |
 | `Example06_ResponsesApiSimple.cs` | Simplified Responses API | All 4 providers |
 
@@ -69,7 +69,7 @@ var client = new OpenAIClient(
 
 | File | Description | Model |
 |------|-------------|-------|
-| `Example07_ImageGeneration.cs` | DALL-E image generation | dall-e-3 |
+| `Example07_ImageGeneration.cs` | Image generation (size = aspect ratio, URL saved to a file) | gemini-3.1-flash-lite-image |
 | `Example08_ListModels.cs` | List available models | N/A |
 | `Example09_CheckBalance.cs` | Check wallet balance | N/A |
 
@@ -78,7 +78,7 @@ var client = new OpenAIClient(
 | File | Description | Model |
 |------|-------------|-------|
 | `Example10_ErrorHandling.cs` | Error handling & retry logic | gpt-5-nano |
-| `Example11_MultipleProviders.cs` | Compare all 4 providers | gpt-5-nano, claude-haiku-4-5, deepseek-chat, gemini-2.5-flash-lite |
+| `Example11_MultipleProviders.cs` | Compare all 4 providers | gpt-5-nano, claude-haiku-4-5, deepseek-v4-flash, gemini-3.7-flash |
 
 ## Running the Samples
 
@@ -133,17 +133,17 @@ Build output will show 0 errors and a few warnings (which are non-critical).
 | **Anthropic** | `claude-sonnet-4-5` | Balanced Claude model |
 | | `claude-opus-4-1` | Highest quality Claude |
 | | `claude-haiku-4-5` | Fast Claude responses |
-| **DeepSeek** | `deepseek-chat` | Cost-effective conversations |
+| **DeepSeek** | `deepseek-v4-flash` | Cost-effective conversations |
 | | `deepseek-reasoner` | Advanced reasoning |
 | **Google** | `gemini-2.5-pro` | Highest quality Gemini |
 | | `gemini-2.5-flash` | Fast Gemini |
-| | `gemini-2.5-flash-lite` | Lightweight Gemini |
+| | `gemini-3.7-flash` | Lightweight Gemini |
 
 ### Image Generation Models
 
 | Provider | Model ID | Sizes Available |
 |----------|----------|-----------------|
-| **OpenAI** | `dall-e-3` | 1024x1024, 1024x1792, 1792x1024 |
+| **Google** | `gemini-3.1-flash-lite-image` | Image generation |
 
 ## Common Configuration
 
@@ -279,4 +279,4 @@ If you see "Could not find 'Hibana.Samples.TestSimple'", edit `CodeSamples.cspro
 - [Python samples](../python/README.md)
 - [JavaScript samples](../javascript/README.md)
 - [Java samples](../java/README.md)
-- Hibana Dashboard: https://hibanacloud.com
+- Hibana Dashboard: https://hibanacloud.ir

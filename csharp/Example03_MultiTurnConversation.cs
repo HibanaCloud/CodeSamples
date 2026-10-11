@@ -5,7 +5,7 @@
  * across multiple messages. The AI can reference previous messages
  * and maintain a coherent conversation flow.
  *
- * Model used: deepseek-chat (DeepSeek conversational model)
+ * Model used: deepseek-v4-flash (DeepSeek conversational model)
  */
 
 using System;
@@ -19,8 +19,8 @@ namespace Hibana.Samples
 {
     public class Example03_MultiTurnConversation
     {
-        private static readonly string ApiKey = "YOUR_API_KEY";
-        private static readonly string BaseUrl = "https://api-ai.hibanacloud.com/v1";
+        private static readonly string ApiKey = Environment.GetEnvironmentVariable("HIBANA_API_KEY") ?? "YOUR_API_KEY";
+        private static readonly string BaseUrl = "https://api-ai.hibanacloud.ir/v1";
 
         public static async Task Main(string[] args)
         {
@@ -49,7 +49,7 @@ namespace Hibana.Samples
                 Endpoint = new Uri(BaseUrl)
             });
 
-            var chatClient = client.GetChatClient("deepseek-chat");
+            var chatClient = client.GetChatClient("deepseek-v4-flash");
 
             // Conversation history - this maintains context across turns
             var conversationHistory = new List<ChatMessage>
@@ -59,7 +59,7 @@ namespace Hibana.Samples
             };
 
             Console.WriteLine(new string('=', 60));
-            Console.WriteLine("Multi-Turn Conversation with deepseek-chat");
+            Console.WriteLine("Multi-Turn Conversation with deepseek-v4-flash");
             Console.WriteLine(new string('=', 60));
 
             // First exchange

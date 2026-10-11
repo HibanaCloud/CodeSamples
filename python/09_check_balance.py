@@ -8,11 +8,12 @@ so we use the requests library to call it directly.
 Endpoint: GET /v1/user/balance
 """
 
+import os
 import requests
 
 # API Configuration
-API_KEY = "YOUR_API_KEY"
-BASE_URL = "https://api-ai.hibanacloud.com/v1"
+API_KEY = os.environ.get("HIBANA_API_KEY", "YOUR_API_KEY")
+BASE_URL = "https://api-ai.hibanacloud.ir/v1"
 
 def check_balance():
     """Check current wallet balance"""
@@ -194,13 +195,14 @@ def balance_check_with_usage_history():
 
         print(f"\nCurrent Balance: {balance:,} Rials\n")
 
-        # Model cost estimates (example values)
+        # Approximate cost in rials of one typical request (2,000 input + 1,000 output tokens),
+        # or of one image (October 2026). Current prices: https://hibanacloud.ir/docs/models
         model_costs = {
-            "gpt-5-nano": 50,
-            "claude-haiku-4-5": 75,
-            "deepseek-chat": 40,
-            "gemini-2.5-flash-lite": 45,
-            "dall-e-3": 5000
+            "gpt-5-nano": 2400,
+            "claude-haiku-4-5": 25600,
+            "deepseek-v4-flash": 5500,
+            "gemini-3.7-flash": 19600,
+            "gemini-3.1-flash-lite-image": 110000
         }
 
         print("Estimated requests per model:")
@@ -214,10 +216,10 @@ def balance_check_with_usage_history():
 
         # Recommendations
         print("\nRecommendations:")
-        if balance < 5000:
+        if balance < 50000:
             print("  Consider recharging soon")
-            print("  Use cost-efficient models (gpt-5-nano, deepseek-chat)")
-        elif balance < 20000:
+            print("  Use cost-efficient models (gpt-5-nano, deepseek-v4-flash)")
+        elif balance < 500000:
             print("  Balance is moderate")
             print("  Monitor usage regularly")
         else:

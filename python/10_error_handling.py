@@ -6,14 +6,15 @@ It covers common errors, retry strategies, and best practices for building
 robust applications.
 """
 
+import os
 from openai import OpenAI
 import openai
 import time
 
 # Initialize the Hibana client
 client = OpenAI(
-    api_key="YOUR_API_KEY",
-    base_url="https://api-ai.hibanacloud.com/v1"
+    api_key=os.environ.get("HIBANA_API_KEY", "YOUR_API_KEY"),
+    base_url="https://api-ai.hibanacloud.ir/v1"
 )
 
 def handle_authentication_error():
@@ -26,7 +27,7 @@ def handle_authentication_error():
     # Create client with invalid API key
     bad_client = OpenAI(
         api_key="INVALID_KEY_123",
-        base_url="https://api-ai.hibanacloud.com/v1"
+        base_url="https://api-ai.hibanacloud.ir/v1"
     )
 
     try:
@@ -167,8 +168,8 @@ def handle_timeout():
 
     # Set a short timeout for demonstration
     timeout_client = OpenAI(
-        api_key="YOUR_API_KEY",
-        base_url="https://api-ai.hibanacloud.com/v1",
+        api_key=os.environ.get("HIBANA_API_KEY", "YOUR_API_KEY"),
+        base_url="https://api-ai.hibanacloud.ir/v1",
         timeout=0.001  # Very short timeout (will likely fail)
     )
 
@@ -260,7 +261,7 @@ def validate_before_request():
         """Validate inputs before API call"""
 
         # Validate model name
-        valid_models = ["gpt-5-nano", "claude-haiku-4-5", "deepseek-chat", "gemini-2.5-flash-lite"]
+        valid_models = ["gpt-5-nano", "claude-haiku-4-5", "deepseek-v4-flash", "gemini-3.7-flash"]
 
         if model not in valid_models:
             print(f" Invalid model: {model}")

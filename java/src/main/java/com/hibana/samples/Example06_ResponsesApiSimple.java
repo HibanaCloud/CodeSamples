@@ -2,12 +2,11 @@ package com.hibana.samples;
 
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
-import com.openai.models.ChatCompletion;
-import com.openai.models.ChatCompletionChunk;
-import com.openai.models.ChatCompletionCreateParams;
-import com.openai.models.ChatCompletionMessage;
-
-import java.util.stream.Stream;
+import com.openai.core.http.StreamResponse;
+import com.openai.models.chat.completions.ChatCompletion;
+import com.openai.models.chat.completions.ChatCompletionChunk;
+import com.openai.models.chat.completions.ChatCompletionCreateParams;
+import com.openai.models.chat.completions.ChatCompletionUserMessageParam;
 
 /**
  * 06 - Responses API (Simple)
@@ -16,12 +15,12 @@ import java.util.stream.Stream;
  * with both streaming and non-streaming modes. Shows how to handle
  * responses and access metadata.
  *
- * Model used: gemini-2.5-flash-lite (Fast Google model)
+ * Model used: gemini-3.7-flash (Fast Google model)
  */
 public class Example06_ResponsesApiSimple {
 
-    private static final String API_KEY = "YOUR_API_KEY";
-    private static final String BASE_URL = "https://api-ai.hibanacloud.com/v1";
+    private static final String API_KEY = System.getenv().getOrDefault("HIBANA_API_KEY", "YOUR_API_KEY");
+    private static final String BASE_URL = "https://api-ai.hibanacloud.ir/v1";
 
     public static void main(String[] args) {
         try {
@@ -51,12 +50,10 @@ public class Example06_ResponsesApiSimple {
                 .build();
 
         ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
-                .model("gemini-2.5-flash-lite")
-                .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                        ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                .content("What is the capital of France? Answer in one word.")
-                                .build()
-                ))
+                .model("gemini-3.7-flash")
+                .addMessage(ChatCompletionUserMessageParam.builder()
+                        .content("What is the capital of France? Answer in one word.")
+                        .build())
                 .temperature(0.3)
                 .maxTokens(10000L)
                 .build();
@@ -85,12 +82,10 @@ public class Example06_ResponsesApiSimple {
         String userMessage = "Write a haiku about programming.";
 
         ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
-                .model("gemini-2.5-flash-lite")
-                .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                        ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                .content(userMessage)
-                                .build()
-                ))
+                .model("gemini-3.7-flash")
+                .addMessage(ChatCompletionUserMessageParam.builder()
+                        .content(userMessage)
+                        .build())
                 .temperature(1.0)
                 .maxTokens(10000L)
                 .build();
@@ -103,7 +98,7 @@ public class Example06_ResponsesApiSimple {
         System.out.println("-".repeat(60));
         System.out.println("Model: " + response.model());
         System.out.println("ID: " + response.id());
-        System.out.println("Object: " + response.object());
+        System.out.println("Object: " + response._object_());
 
         response.usage().ifPresent(usage -> {
             System.out.println("\nToken Usage:");
@@ -139,42 +134,40 @@ public class Example06_ResponsesApiSimple {
         System.out.println("-".repeat(60));
 
         ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
-                .model("gemini-2.5-flash-lite")
-                .addMessage(ChatCompletionMessage.ofChatCompletionUserMessageParam(
-                        ChatCompletionMessage.ChatCompletionUserMessageParam.builder()
-                                .content(userMessage)
-                                .build()
-                ))
+                .model("gemini-3.7-flash")
+                .addMessage(ChatCompletionUserMessageParam.builder()
+                        .content(userMessage)
+                        .build())
                 .temperature(0.7)
                 .maxTokens(10000L)
-                .stream(true)
                 .build();
-
-        Stream<ChatCompletionChunk> stream = client.chat().completions().createStreaming(params);
 
         final int[] chunkCount = {0};
         StringBuilder fullResponse = new StringBuilder();
 
-        stream.forEach(chunk -> {
-            chunkCount[0]++;
+        // createStreaming() enables streaming; try-with-resources closes the connection when done
+        try (StreamResponse<ChatCompletionChunk> stream = client.chat().completions().createStreaming(params)) {
+            stream.stream().forEach(chunk -> {
+                chunkCount[0]++;
 
-            // Check if chunk has choices and content - IMPORTANT for avoiding errors
-            if (chunk.choices() != null && !chunk.choices().isEmpty()) {
-                chunk.choices().get(0).delta().content().ifPresent(content -> {
-                    fullResponse.append(content);
-                    System.out.print(content);
-                    System.out.flush();
-                });
+                // Check if chunk has choices and content - IMPORTANT for avoiding errors
+                if (chunk.choices() != null && !chunk.choices().isEmpty()) {
+                    chunk.choices().get(0).delta().content().ifPresent(content -> {
+                        fullResponse.append(content);
+                        System.out.print(content);
+                        System.out.flush();
+                    });
 
-                chunk.choices().get(0).finishReason().ifPresent(finishReason -> {
-                    System.out.println("\n\n" + "-".repeat(60));
-                    System.out.println("Stream complete!");
-                    System.out.println("Finish reason: " + finishReason);
-                    System.out.println("Total chunks: " + chunkCount[0]);
-                    System.out.println("Total characters: " + fullResponse.length());
-                    System.out.println("-".repeat(60));
-                });
-            }
-        });
+                    chunk.choices().get(0).finishReason().ifPresent(finishReason -> {
+                        System.out.println("\n\n" + "-".repeat(60));
+                        System.out.println("Stream complete!");
+                        System.out.println("Finish reason: " + finishReason);
+                        System.out.println("Total chunks: " + chunkCount[0]);
+                        System.out.println("Total characters: " + fullResponse.length());
+                        System.out.println("-".repeat(60));
+                    });
+                }
+            });
+        }
     }
 }

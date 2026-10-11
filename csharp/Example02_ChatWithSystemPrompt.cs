@@ -18,8 +18,8 @@ namespace Hibana.Samples
 {
     public class Example02_ChatWithSystemPrompt
     {
-        private static readonly string ApiKey = "YOUR_API_KEY";
-        private static readonly string BaseUrl = "https://api-ai.hibanacloud.com/v1";
+        private static readonly string ApiKey = Environment.GetEnvironmentVariable("HIBANA_API_KEY") ?? "YOUR_API_KEY";
+        private static readonly string BaseUrl = "https://api-ai.hibanacloud.ir/v1";
 
         public static async Task Main(string[] args)
         {

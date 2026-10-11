@@ -2,164 +2,72 @@ package com.hibana.samples;
 
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
-import com.openai.models.Image;
-import com.openai.models.ImageGenerateParams;
-import com.openai.models.ImagesResponse;
+import com.openai.models.images.ImageGenerateParams;
+import com.openai.models.images.ImagesResponse;
+
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 /**
  * 07 - Image Generation
  *
- * This example demonstrates how to generate images using AI models
- * like DALL-E. The API accepts text prompts and returns image URLs
- * that can be downloaded or displayed.
+ * This example generates an image from a text prompt with the Hibana API,
+ * using the official OpenAI Java SDK.
  *
- * Model used: dall-e-3
+ * - `size` is an ASPECT RATIO such as "1:1", "16:9" or "9:16"
+ *   (all ten are listed at https://hibanacloud.ir/docs/dalle).
+ * - The response is a temporary URL that expires after about an hour,
+ *   so the example downloads the image right away.
+ *
+ * Model used: gemini-3.1-flash-lite-image
  */
 public class Example07_ImageGeneration {
 
-    private static final String API_KEY = "YOUR_API_KEY";
-    private static final String BASE_URL = "https://api-ai.hibanacloud.com/v1";
+    // Reads your Hibana API key from the HIBANA_API_KEY environment variable
+    private static final String API_KEY = System.getenv().getOrDefault("HIBANA_API_KEY", "YOUR_API_KEY");
+    private static final String BASE_URL = "https://api-ai.hibanacloud.ir/v1";
+    private static final String MODEL = "gemini-3.1-flash-lite-image";
 
     public static void main(String[] args) {
         try {
-            basicImageGeneration();
-            System.out.println("\n");
-            imageGenerationWithOptions();
-            System.out.println("\n");
-            multipleImages();
+            generateImage(
+                    "A serene landscape of the Alborz mountains in Iran at sunset, with snow-capped peaks and golden light",
+                    "16:9",
+                    "alborz_16x9.png");
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    private static void basicImageGeneration() {
-        /**
-         * Basic image generation
-         */
-
+    private static void generateImage(String prompt, String size, String filename) throws Exception {
         System.out.println("=".repeat(60));
-        System.out.println("Basic Image Generation");
+        System.out.println("Image Generation - " + MODEL + " (" + size + ")");
         System.out.println("=".repeat(60));
+        System.out.println("\nPrompt: " + prompt);
+        System.out.println("\nGenerating...");
 
         OpenAIClient client = OpenAIOkHttpClient.builder()
                 .apiKey(API_KEY)
                 .baseUrl(BASE_URL)
                 .build();
 
-        String prompt = "A serene Japanese garden with cherry blossoms and a koi pond";
-
-        System.out.println("\nPrompt: " + prompt);
-        System.out.println("\nGenerating image...");
-
         ImageGenerateParams params = ImageGenerateParams.builder()
-                .model("dall-e-3")
+                .model(MODEL)
                 .prompt(prompt)
-                .n(1L)
-                .size(ImageGenerateParams.Size._1024X1024)
+                .size(ImageGenerateParams.Size.of(size))
                 .build();
 
         ImagesResponse response = client.images().generate(params);
+        String url = response.data().orElseThrow().get(0).url().orElseThrow();
+        System.out.println("\nTemporary URL (valid for about an hour):\n" + url);
 
-        System.out.println("\n" + "-".repeat(60));
-        System.out.println("Image generated successfully!");
-        System.out.println("-".repeat(60));
-
-        for (int i = 0; i < response.data().size(); i++) {
-            Image image = response.data().get(i);
-            System.out.println("\nImage " + (i + 1) + ":");
-            image.url().ifPresent(url -> System.out.println("  URL: " + url));
-            image.revisedPrompt().ifPresent(revised -> System.out.println("  Revised prompt: " + revised));
+        try (InputStream in = new URL(url).openStream()) {
+            Files.copy(in, Path.of(filename), StandardCopyOption.REPLACE_EXISTING);
         }
-    }
-
-    private static void imageGenerationWithOptions() {
-        /**
-         * Image generation with specific options
-         */
-
-        System.out.println("=".repeat(60));
-        System.out.println("Image Generation with Options");
-        System.out.println("=".repeat(60));
-
-        OpenAIClient client = OpenAIOkHttpClient.builder()
-                .apiKey(API_KEY)
-                .baseUrl(BASE_URL)
-                .build();
-
-        String prompt = "A futuristic cityscape at sunset with flying cars, cyberpunk style";
-
-        System.out.println("\nPrompt: " + prompt);
-        System.out.println("Quality: HD");
-        System.out.println("Style: Vivid");
-        System.out.println("\nGenerating image...");
-
-        ImageGenerateParams params = ImageGenerateParams.builder()
-                .model("dall-e-3")
-                .prompt(prompt)
-                .n(1L)
-                .size(ImageGenerateParams.Size._1024X1024)
-                .quality(ImageGenerateParams.Quality.HD)
-                .style(ImageGenerateParams.Style.VIVID)
-                .build();
-
-        ImagesResponse response = client.images().generate(params);
-
-        System.out.println("\n" + "-".repeat(60));
-        System.out.println("High-quality image generated!");
-        System.out.println("-".repeat(60));
-
-        response.data().forEach(image -> {
-            image.url().ifPresent(url -> {
-                System.out.println("\nImage URL: " + url);
-                System.out.println("Download this URL to view your generated image.");
-            });
-            image.revisedPrompt().ifPresent(revised -> {
-                System.out.println("\nRevised prompt: " + revised);
-            });
-        });
-    }
-
-    private static void multipleImages() {
-        /**
-         * Generate multiple image variations
-         */
-
-        System.out.println("=".repeat(60));
-        System.out.println("Multiple Image Variations");
-        System.out.println("=".repeat(60));
-
-        OpenAIClient client = OpenAIOkHttpClient.builder()
-                .apiKey(API_KEY)
-                .baseUrl(BASE_URL)
-                .build();
-
-        String prompt = "A cute robot reading a book in a cozy library";
-
-        System.out.println("\nPrompt: " + prompt);
-        System.out.println("Generating 2 variations...\n");
-
-        ImageGenerateParams params = ImageGenerateParams.builder()
-                .model("dall-e-3")
-                .prompt(prompt)
-                .n(2L)  // Generate 2 images
-                .size(ImageGenerateParams.Size._1024X1024)
-                .build();
-
-        ImagesResponse response = client.images().generate(params);
-
-        System.out.println("-".repeat(60));
-        System.out.println("Generated " + response.data().size() + " variations:");
-        System.out.println("-".repeat(60));
-
-        for (int i = 0; i < response.data().size(); i++) {
-            Image image = response.data().get(i);
-            System.out.println("\nVariation " + (i + 1) + ":");
-            image.url().ifPresent(url -> System.out.println("  " + url));
-        }
-
-        System.out.println("\n" + "=".repeat(60));
-        System.out.println("Tip: Save these URLs to download the images!");
-        System.out.println("=".repeat(60));
+        System.out.println("\nSaved to " + filename);
     }
 }

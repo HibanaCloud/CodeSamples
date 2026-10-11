@@ -8,12 +8,13 @@ a messages array, making it easier for simple use cases.
 Model used: gpt-5-nano (OpenAI model)
 """
 
+import os
 from openai import OpenAI
 
 # Initialize the Hibana client
 client = OpenAI(
-    api_key="YOUR_API_KEY",
-    base_url="https://api-ai.hibanacloud.com/v1"
+    api_key=os.environ.get("HIBANA_API_KEY", "YOUR_API_KEY"),
+    base_url="https://api-ai.hibanacloud.ir/v1"
 )
 
 def simple_responses_api():
@@ -91,7 +92,7 @@ def responses_streaming():
 
     # Enable streaming
     stream = client.chat.completions.create(
-        model="gemini-2.5-flash-lite",  # Using Gemini
+        model="gemini-3.7-flash",  # Using Gemini
         messages=[{"role": "user", "content": user_input}],
         temperature=1.0,
         max_tokens=10000,
@@ -124,7 +125,7 @@ def responses_with_multi_input():
         print(f"  {msg['role']}: {msg['content']}")
 
     response = client.chat.completions.create(
-        model="deepseek-chat",
+        model="deepseek-v4-flash",
         messages=messages_input,
         temperature=0.8,
         max_tokens=8000

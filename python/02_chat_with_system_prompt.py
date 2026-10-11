@@ -8,12 +8,13 @@ context and guidelines for how the assistant should respond.
 Model used: claude-haiku-4-5 (Claude Haiku - Fast Anthropic model)
 """
 
+import os
 from openai import OpenAI
 
 # Initialize the Hibana client
 client = OpenAI(
-    api_key="YOUR_API_KEY",
-    base_url="https://api-ai.hibanacloud.com/v1"
+    api_key=os.environ.get("HIBANA_API_KEY", "YOUR_API_KEY"),
+    base_url="https://api-ai.hibanacloud.ir/v1"
 )
 
 def chat_with_system_prompt():

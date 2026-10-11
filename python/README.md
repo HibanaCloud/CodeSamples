@@ -28,7 +28,7 @@ from openai import OpenAI
 
 client = OpenAI(
     api_key="YOUR_API_KEY",  # Replace with your Hibana API key
-    base_url="https://api-ai.hibanacloud.com/v1"
+    base_url="https://api-ai.hibanacloud.ir/v1"
 )
 ```
 
@@ -42,13 +42,13 @@ client = OpenAI(
 |------|-------------|-------|
 | `01_simple_chat.py` | Basic chat completion | gpt-5-nano |
 | `02_chat_with_system_prompt.py` | Custom system instructions | claude-haiku-4-5, gpt-5-nano |
-| `03_multi_turn_conversation.py` | Multi-message conversations | deepseek-chat |
+| `03_multi_turn_conversation.py` | Multi-message conversations | deepseek-v4-flash |
 
 ### Advanced Features
 
 | File | Description | Model |
 |------|-------------|-------|
-| `04_streaming_response.py` | Real-time streaming responses | gpt-5-nano, gemini-2.5-flash-lite |
+| `04_streaming_response.py` | Real-time streaming responses | gpt-5-nano, gemini-3.7-flash |
 | `05_json_mode.py` | Structured JSON output | gpt-5-nano |
 | `06_responses_api_simple.py` | Simplified Responses API | All 4 providers |
 
@@ -56,7 +56,7 @@ client = OpenAI(
 
 | File | Description | Model |
 |------|-------------|-------|
-| `07_image_generation.py` | DALL-E image generation | dall-e-3 |
+| `07_image_generation.py` | Image generation (size = aspect ratio, URL saved to a file) | gemini-3.1-flash-lite-image |
 | `08_list_models.py` | List available models | N/A |
 | `09_check_balance.py` | Check wallet balance | N/A |
 
@@ -65,7 +65,9 @@ client = OpenAI(
 | File | Description | Model |
 |------|-------------|-------|
 | `10_error_handling.py` | Error handling & retry logic | gpt-5-nano |
-| `11_multiple_providers.py` | Compare all 4 providers | gpt-5-nano, claude-haiku-4-5, deepseek-chat, gemini-2.5-flash-lite |
+| `11_multiple_providers.py` | Compare all 4 providers | gpt-5-nano, claude-haiku-4-5, deepseek-v4-flash, gemini-3.7-flash |
+| `12_embeddings_search.py` | Semantic search in Persian with embeddings | bge-m3 |
+| `13_cutoff_fallback.py` | Fall back to a domestic model during an internet cutoff | gpt-5-nano → gpt-oss |
 
 ## Running the Samples
 
@@ -87,9 +89,11 @@ python python/01_simple_chat.py
 |----------|----------|-------------|
 | **OpenAI** | `gpt-5-nano` | Fast and efficient GPT model |
 | **Anthropic** | `claude-haiku-4-5` | Claude Haiku - Fast responses |
-| **DeepSeek** | `deepseek-chat` | DeepSeek conversational model |
-| **Google** | `gemini-2.5-flash-lite` | Gemini Flash - Lightweight |
-| **OpenAI** | `dall-e-3` | Image generation |
+| **DeepSeek** | `deepseek-v4-flash` | DeepSeek conversational model |
+| **Hibana (domestic)** | `gpt-oss` | Runs on Hibana's servers; available during internet cutoffs |
+| **Hibana (domestic)** | `bge-m3` | Embeddings, 1024 dimensions |
+| **Google** | `gemini-3.7-flash` | Gemini Flash |
+| **Google** | `gemini-3.1-flash-lite-image` | Image generation |
 
 ## Common Configuration
 
@@ -128,4 +132,4 @@ See `10_error_handling.py` for examples of handling rate limits with exponential
 
 - [Back to main README](../README.md)
 - [JavaScript samples](../javascript/README.md)
-- Hibana Dashboard: https://hibanacloud.com
+- Hibana Dashboard: https://hibanacloud.ir

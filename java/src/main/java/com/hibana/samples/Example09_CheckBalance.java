@@ -8,6 +8,7 @@ import okhttp3.Response;
 
 import java.io.IOException;
 import java.text.NumberFormat;
+import java.util.HashMap;
 import java.util.Locale;
 
 /**
@@ -21,8 +22,8 @@ import java.util.Locale;
  */
 public class Example09_CheckBalance {
 
-    private static final String API_KEY = "YOUR_API_KEY";
-    private static final String BASE_URL = "https://api-ai.hibanacloud.com/v1";
+    private static final String API_KEY = System.getenv().getOrDefault("HIBANA_API_KEY", "YOUR_API_KEY");
+    private static final String BASE_URL = "https://api-ai.hibanacloud.ir/v1";
     private static final Gson gson = new Gson();
     private static final OkHttpClient httpClient = new OkHttpClient();
 
@@ -222,13 +223,14 @@ public class Example09_CheckBalance {
                 NumberFormat formatter = NumberFormat.getInstance(Locale.US);
                 System.out.println("\nCurrent Balance: " + formatter.format(balance) + " Rials\n");
 
-                // Model cost estimates (example values)
+                // Approximate cost in rials of one typical request (2,000 input + 1,000 output tokens),
+                // or of one image (October 2026). Current prices: https://hibanacloud.ir/docs/models
                 Map<String, Long> modelCosts = Map.of(
-                        "gpt-5-nano", 50L,
-                        "claude-haiku-4-5", 75L,
-                        "deepseek-chat", 40L,
-                        "gemini-2.5-flash-lite", 45L,
-                        "dall-e-3", 5000L
+                        "gpt-5-nano", 2400L,
+                        "claude-haiku-4-5", 25600L,
+                        "deepseek-v4-flash", 5500L,
+                        "gemini-3.7-flash", 19600L,
+                        "gemini-3.1-flash-lite-image", 110000L
                 );
 
                 System.out.println("Estimated requests per model:");
@@ -243,10 +245,10 @@ public class Example09_CheckBalance {
 
                 // Recommendations
                 System.out.println("\nRecommendations:");
-                if (balance < 5000) {
+                if (balance < 50000) {
                     System.out.println("  • Consider recharging soon");
-                    System.out.println("  • Use cost-efficient models (gpt-5-nano, deepseek-chat)");
-                } else if (balance < 20000) {
+                    System.out.println("  • Use cost-efficient models (gpt-5-nano, deepseek-v4-flash)");
+                } else if (balance < 500000) {
                     System.out.println("  • Balance is moderate");
                     System.out.println("  • Monitor usage regularly");
                 } else {

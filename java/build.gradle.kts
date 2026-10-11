@@ -7,8 +7,8 @@ group = "com.hibana"
 version = "1.0.0"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 repositories {
@@ -31,5 +31,6 @@ tasks.withType<JavaCompile> {
 }
 
 application {
-    mainClass.set("com.hibana.samples.Example01_SimpleChat")
+    // Pick the example to run: gradle run -PmainClass=com.hibana.samples.Example02_ChatWithSystemPrompt
+    mainClass.set(providers.gradleProperty("mainClass").orElse("com.hibana.samples.Example01_SimpleChat"))
 }

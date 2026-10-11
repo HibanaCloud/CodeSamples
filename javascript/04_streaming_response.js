@@ -12,8 +12,8 @@ import OpenAI from 'openai';
 
 // Initialize the Hibana client
 const client = new OpenAI({
-    apiKey: "YOUR_API_KEY",
-    baseURL: "https://api-ai.hibanacloud.com/v1"
+    apiKey: process.env.HIBANA_API_KEY ?? "YOUR_API_KEY",
+    baseURL: "https://api-ai.hibanacloud.ir/v1"
 });
 
 async function streamingChat() {
@@ -81,7 +81,7 @@ async function streamingWithMetadata() {
     console.log("\nStreaming response...\n");
 
     const stream = await client.chat.completions.create({
-        model: "gemini-2.5-flash-lite",  // Using Gemini model
+        model: "gemini-3.7-flash",  // Using Gemini model
         messages: [{ role: "user", content: userMessage }],
         temperature: 0.7,
         max_tokens: 10000,

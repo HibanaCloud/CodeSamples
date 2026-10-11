@@ -8,13 +8,14 @@ tokens are received and displayed progressively as they're generated.
 Model used: gpt-5-nano (Fast OpenAI model)
 """
 
+import os
 from openai import OpenAI
 import sys
 
 # Initialize the Hibana client
 client = OpenAI(
-    api_key="YOUR_API_KEY",
-    base_url="https://api-ai.hibanacloud.com/v1"
+    api_key=os.environ.get("HIBANA_API_KEY", "YOUR_API_KEY"),
+    base_url="https://api-ai.hibanacloud.ir/v1"
 )
 
 def streaming_chat():
@@ -75,7 +76,7 @@ def streaming_with_metadata():
     print("\nStreaming response...\n")
 
     stream = client.chat.completions.create(
-        model="gemini-2.5-flash-lite",  # Using Gemini model
+        model="gemini-3.7-flash",  # Using Gemini model
         messages=[{"role": "user", "content": user_message}],
         temperature=0.7,
         max_tokens=10000,

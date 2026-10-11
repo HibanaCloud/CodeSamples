@@ -5,15 +5,16 @@ This example demonstrates how to maintain conversation context
 across multiple messages. The AI can reference previous messages
 and maintain a coherent conversation flow.
 
-Model used: deepseek-chat (DeepSeek conversational model)
+Model used: deepseek-v4-flash (DeepSeek conversational model)
 """
 
+import os
 from openai import OpenAI
 
 # Initialize the Hibana client
 client = OpenAI(
-    api_key="YOUR_API_KEY",
-    base_url="https://api-ai.hibanacloud.com/v1"
+    api_key=os.environ.get("HIBANA_API_KEY", "YOUR_API_KEY"),
+    base_url="https://api-ai.hibanacloud.ir/v1"
 )
 
 def multi_turn_conversation():
@@ -32,14 +33,14 @@ def multi_turn_conversation():
     ]
 
     print("="*60)
-    print("Multi-Turn Conversation with deepseek-chat")
+    print("Multi-Turn Conversation with deepseek-v4-flash")
     print("="*60)
 
     # First exchange
     print("\nUser: Hi! I'm learning Python. Can you help me?")
 
     response1 = client.chat.completions.create(
-        model="deepseek-chat",
+        model="deepseek-v4-flash",
         messages=conversation_history,
         temperature=0.8,
         max_tokens=8192
@@ -64,7 +65,7 @@ def multi_turn_conversation():
     print(f"\nUser: {user_message2}")
 
     response2 = client.chat.completions.create(
-        model="deepseek-chat",
+        model="deepseek-v4-flash",
         messages=conversation_history,
         temperature=0.8,
         max_tokens=8192
@@ -89,7 +90,7 @@ def multi_turn_conversation():
     print(f"\nUser: {user_message3}")
 
     response3 = client.chat.completions.create(
-        model="deepseek-chat",
+        model="deepseek-v4-flash",
         messages=conversation_history,
         temperature=0.8,
         max_tokens=8192
@@ -127,7 +128,7 @@ def interactive_conversation():
         conversation.append({"role": "user", "content": user_input})
 
         response = client.chat.completions.create(
-            model="deepseek-chat",
+            model="deepseek-v4-flash",
             messages=conversation,
             temperature=0.8
         )

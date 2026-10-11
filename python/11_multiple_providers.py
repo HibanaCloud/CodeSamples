@@ -6,21 +6,22 @@ through Hibana API: OpenAI, Anthropic, DeepSeek, and Google Gemini.
 Compare responses, performance, and features across providers.
 """
 
+import os
 from openai import OpenAI
 import time
 
 # Initialize the Hibana client
 client = OpenAI(
-    api_key="YOUR_API_KEY",
-    base_url="https://api-ai.hibanacloud.com/v1"
+    api_key=os.environ.get("HIBANA_API_KEY", "YOUR_API_KEY"),
+    base_url="https://api-ai.hibanacloud.ir/v1"
 )
 
 # Define models for each provider
 MODELS = {
     "OpenAI": "gpt-5-nano",
     "Anthropic": "claude-haiku-4-5",
-    "DeepSeek": "deepseek-chat",
-    "Google": "gemini-2.5-flash-lite"
+    "DeepSeek": "deepseek-v4-flash",
+    "Google": "gemini-3.7-flash"
 }
 
 def compare_basic_responses():
@@ -268,7 +269,7 @@ def provider_specific_features():
     print("-" * 60)
     try:
         response = client.chat.completions.create(
-            model="deepseek-chat",
+            model="deepseek-v4-flash",
             messages=[
                 {
                     "role": "user",
@@ -288,7 +289,7 @@ def provider_specific_features():
     print("-" * 60)
     try:
         response = client.chat.completions.create(
-            model="gemini-2.5-flash-lite",
+            model="gemini-3.7-flash",
             messages=[
                 {
                     "role": "user",
@@ -310,11 +311,11 @@ def choose_best_model_for_task():
 
     recommendations = {
         "Speed & Cost": {
-            "model": "gpt-5-nano or deepseek-chat",
+            "model": "gpt-5-nano or deepseek-v4-flash",
             "reason": "Fast responses and low cost"
         },
         "Coding": {
-            "model": "deepseek-chat or gpt-5-nano",
+            "model": "deepseek-v4-flash or gpt-5-nano",
             "reason": "Strong programming capabilities"
         },
         "Creative Writing": {
@@ -326,7 +327,7 @@ def choose_best_model_for_task():
             "reason": "Large context window"
         },
         "Persian/Multilingual": {
-            "model": "gpt-5-nano or gemini-2.5-flash-lite",
+            "model": "gpt-5-nano or gemini-3.7-flash",
             "reason": "Good multilingual support"
         },
         "JSON Output": {

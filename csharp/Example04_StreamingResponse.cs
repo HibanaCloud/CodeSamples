@@ -20,8 +20,8 @@ namespace Hibana.Samples
 {
     public class Example04_StreamingResponse
     {
-        private static readonly string ApiKey = "YOUR_API_KEY";
-        private static readonly string BaseUrl = "https://api-ai.hibanacloud.com/v1";
+        private static readonly string ApiKey = Environment.GetEnvironmentVariable("HIBANA_API_KEY") ?? "YOUR_API_KEY";
+        private static readonly string BaseUrl = "https://api-ai.hibanacloud.ir/v1";
 
         public static async Task Main(string[] args)
         {
@@ -108,7 +108,7 @@ namespace Hibana.Samples
                 Endpoint = new Uri(BaseUrl)
             });
 
-            var chatClient = client.GetChatClient("gemini-2.5-flash-lite");
+            var chatClient = client.GetChatClient("gemini-3.7-flash");
 
             Console.WriteLine("\n" + new string('=', 60));
             Console.WriteLine("Streaming with Metadata Inspection");
